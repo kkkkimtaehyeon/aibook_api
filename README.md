@@ -1,5 +1,6 @@
 # AiBook
-
+# TODO(common)
+- [ ] 공통된 응답형식 
 # TODO(Spring)
 ## Story
 - [ ] Story(BaseStory)를 저장
