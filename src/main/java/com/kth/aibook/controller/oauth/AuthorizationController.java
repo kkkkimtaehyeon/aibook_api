@@ -29,7 +29,7 @@ public class AuthorizationController {
             return ApiResponse.success(HttpStatus.OK, "jwt");
         } catch (MemberNotFoundException e) {
             return ApiResponse.success(HttpStatus.FORBIDDEN, email);
-            
+
         }
     }
 }
