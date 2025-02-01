@@ -1,0 +1,22 @@
+spring:
+  application:
+    name:
+      AiBook
+  datasource:
+    url: jdbc:mysql://localhost:3306/aibook
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    open-in-view: false
+  config:
+    import: classpath:application-secret.yml
+
+server:
+  port: 8080
