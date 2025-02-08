@@ -12,7 +12,7 @@ public class MemberDto {
     private final Long memberId;
     private final String email;
     private final String nickName;
-    private final LocalDate birth;
+    private final LocalDate birthDate;
     private final LocalDateTime createdAt;
     private final MemberRole role;
 
@@ -20,7 +20,7 @@ public class MemberDto {
         this.memberId = entity.getId();
         this.email = entity.getEmail();
         this.nickName = entity.getNickName();
-        this.birth = entity.getBirth();
+        this.birthDate = entity.getBirthDate();
         this.createdAt = entity.getCreatedAt();
         this.role = entity.getRole();
     }

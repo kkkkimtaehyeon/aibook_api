@@ -48,4 +48,13 @@ public class KakaoAuthenticationService implements AuthenticationService {
         }
         return userInfo.kakao_account().email();
     }
+
+    @Override
+    public long getId(String accessToken) {
+        KakaoUserInfoResponseDto userInfo = kakaoInfoClient.getInfo(BEARER + accessToken);
+        if (userInfo == null) {
+            throw new KakaoOauthException("카카오 유저 정보를 가져오는데 실패했습니다.");
+        }
+        return userInfo.id();
+    }
 }

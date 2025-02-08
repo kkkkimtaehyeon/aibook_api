@@ -1,7 +1,9 @@
 package com.kth.aibook.controller.oauth;
 
 import com.kth.aibook.common.ApiResponse;
+import com.kth.aibook.common.provider.JwtProvider;
 import com.kth.aibook.dto.member.MemberDto;
+import com.kth.aibook.dto.oauth.KakaoOauthProviderDto;
 import com.kth.aibook.exception.member.MemberNotFoundException;
 import com.kth.aibook.service.authentication.impl.KakaoAuthenticationService;
 import com.kth.aibook.service.member.MemberService;
@@ -18,18 +20,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthorizationController {
     private final KakaoAuthenticationService kakaoAuthenticationService;
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
     @GetMapping("/login/oauth2/code/kakao")
-    public ApiResponse<String> kakaoLogin(@RequestParam("code") String code) {
+    public ApiResponse<Object> kakaoLogin(@RequestParam("code") String code) {
         String accessToken = kakaoAuthenticationService.getAccessToken(code);
-        String email = kakaoAuthenticationService.getEmail(accessToken);
+        long oauthProviderMemberId  = kakaoAuthenticationService.getId(accessToken);
         try {
-            MemberDto memberDto = memberService.getMemberByEmail(email);
-            //TODO: jwt 발급
-            return ApiResponse.success(HttpStatus.OK, "jwt");
-        } catch (MemberNotFoundException e) {
-            return ApiResponse.success(HttpStatus.FORBIDDEN, email);
+            MemberDto memberDto = memberService.getMemberByOauthMemberId("kakao", oauthProviderMemberId);
 
+            String token = jwtProvider.generateAccessToken(memberDto);
+            return ApiResponse.success(HttpStatus.OK, token);
+        } catch (MemberNotFoundException e) {
+            return ApiResponse.success(HttpStatus.FORBIDDEN, new KakaoOauthProviderDto("kakao", oauthProviderMemberId));
         }
     }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,20 +22,25 @@ public class Member {
 
     private String nickName;
 
-    private LocalDate birth;
+    private LocalDate birthDate;
 
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
+    @Setter
+    @OneToOne
+    @JoinColumn(name = "oauth_member_id")
+    private OauthMember oauthMember;
+
 
     @Builder
-    public Member(Long id, String email, String nickName, LocalDate birth, LocalDateTime createdAt, MemberRole role) {
+    public Member(Long id, String email, String nickName, LocalDate birthDate, LocalDateTime createdAt, MemberRole role) {
         this.id = id;
         this.email = email;
         this.nickName = nickName;
-        this.birth = birth;
+        this.birthDate = birthDate;
         this.createdAt = createdAt;
         this.role = role;
     }

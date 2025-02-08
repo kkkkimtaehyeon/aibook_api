@@ -6,6 +6,7 @@ import com.kth.aibook.service.authentication.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
@@ -13,7 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
-    private static final String FRONT_URL = "http://localhost:5173";
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
 
@@ -24,7 +24,9 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(path -> path
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //preFlight를 위한 option 허용
                 .requestMatchers("/login/**", "/oauth2/authorization/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                 .requestMatchers("/token").permitAll()
         );
 
