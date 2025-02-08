@@ -1,6 +1,6 @@
 # AiBook
 # TODO(common)
-- [ ] 공통된 응답형식 
+- [x] 공통된 응답형식 - ApiResonse
 # TODO(Spring)
 ## Story
 - [ ] Story(BaseStory)를 저장
@@ -15,7 +15,7 @@
 - [ ] Story 삭제
 
 ## Member
-- [ ] 소셜 로그인
+- [x] 소셜 로그인 - 카카오
 - [ ] 회원 정보 조회
 - [ ] 회원 가입
 - [ ] 로그인 유지
