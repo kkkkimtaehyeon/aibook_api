@@ -1,5 +1,6 @@
 package com.kth.aibook.entity.story;
 
+import com.kth.aibook.dto.story.StoryCompleteRequestDto;
 import com.kth.aibook.entity.member.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -21,7 +24,7 @@ public class Story {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String baseStory;
 
-    @Column(length = 500, nullable = true)
+    @Column(length = 100, nullable = true)
     private String title;
 
     @Column(columnDefinition = "DATETIME", nullable = true)
@@ -35,6 +38,9 @@ public class Story {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @OneToMany(mappedBy = "story", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<StoryPage> storyPages = new ArrayList<>();
+
     @Builder
     public Story(Long id, String baseStory, String title, LocalDateTime createdAt, boolean isPublic, Member member) {
         this.id = id;
@@ -43,5 +49,16 @@ public class Story {
         this.createdAt = createdAt;
         this.isPublic = isPublic;
         this.member = member;
+    }
+
+    public void addStoryPage(StoryPage storyPage) {
+        storyPage.setStory(this);
+        this.storyPages.add(storyPage);
+    }
+
+    public void completeStory(StoryCompleteRequestDto completeRequest) {
+        this.title = completeRequest.title();
+        this.isPublic = completeRequest.isPublic();
+        this.createdAt = LocalDateTime.now();
     }
 }

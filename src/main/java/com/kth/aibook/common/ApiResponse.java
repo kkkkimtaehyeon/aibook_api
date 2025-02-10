@@ -21,6 +21,10 @@ public class ApiResponse<T> {
         return new ApiResponse<T>(true, httpStatus, null, data);
     }
 
+    public static <T> ApiResponse<T> success(HttpStatus httpStatus) {
+        return new ApiResponse<T>(true, httpStatus, null, null);
+    }
+
     public static <T> ApiResponse<T> fail(HttpStatus httpStatus, String message) {
         return new ApiResponse<T>(false, httpStatus, message, null);
     }

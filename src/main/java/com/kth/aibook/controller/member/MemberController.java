@@ -1,9 +1,11 @@
 package com.kth.aibook.controller.member;
 
+import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.dto.member.MemberCreateRequestDto;
 import com.kth.aibook.service.member.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +18,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public void createMember(@Valid @RequestBody MemberCreateRequestDto createRequest) {
+    public ApiResponse<Void> createMember(@Valid @RequestBody MemberCreateRequestDto createRequest) {
         memberService.createMember(createRequest);
+        return ApiResponse.success(HttpStatus.CREATED);
     }
 }

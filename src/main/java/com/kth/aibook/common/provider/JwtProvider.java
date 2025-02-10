@@ -1,16 +1,20 @@
 package com.kth.aibook.common.provider;
 
+import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.member.MemberDto;
-import com.kth.aibook.entity.member.MemberRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtProvider {
@@ -50,16 +54,31 @@ public class JwtProvider {
         }
     }
 
+    public Authentication getAuthentication(String token) {
+        validateToken(token);
+
+        Long memberId = getMemberId(token);
+        List<SimpleGrantedAuthority> authorities = getAuthorities(token);
+
+        CustomUserDetails userDetails = new CustomUserDetails(memberId, authorities);
+        return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+    }
+
     public long getMemberIdFromToken(String token) {
         Claims claims = parseToken(token);
         return Long.parseLong(claims.getSubject());
     }
 
-    public MemberRole getMemberRoleFromToken(String token) {
+    private Long getMemberId(String token) {
         Claims claims = parseToken(token);
-        return MemberRole.valueOf((String) claims.get("role"));
+        return Long.parseLong(claims.getSubject());
     }
 
+    private List<SimpleGrantedAuthority> getAuthorities(String token) {
+        Claims claims = parseToken(token);
+        String role = claims.get("role").toString();
+        return List.of(new SimpleGrantedAuthority(role));
+    }
 
     private String generateJwt(MemberDto memberDto, long duration) {
         long currentMillis = System.currentTimeMillis();
