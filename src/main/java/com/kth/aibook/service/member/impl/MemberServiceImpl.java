@@ -5,7 +5,7 @@ import com.kth.aibook.dto.member.MemberDto;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.member.OauthMember;
 import com.kth.aibook.exception.member.MemberNotFoundException;
-import com.kth.aibook.repository.OauthMemberRepository;
+import com.kth.aibook.repository.member.OauthMemberRepository;
 import com.kth.aibook.repository.member.MemberRepository;
 import com.kth.aibook.service.member.MemberService;
 import lombok.RequiredArgsConstructor;

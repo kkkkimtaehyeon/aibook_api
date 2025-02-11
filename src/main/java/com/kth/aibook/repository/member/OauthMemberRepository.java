@@ -1,4 +1,4 @@
-package com.kth.aibook.repository;
+package com.kth.aibook.repository.member;
 
 
 import com.kth.aibook.entity.member.OauthMember;

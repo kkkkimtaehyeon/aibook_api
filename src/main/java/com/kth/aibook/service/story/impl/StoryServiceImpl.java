@@ -3,6 +3,7 @@ package com.kth.aibook.service.story.impl;
 import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
 import com.kth.aibook.dto.story.StoryCompleteRequestDto;
 import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
+import com.kth.aibook.dto.story.StorySimpleResponseDto;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.story.Story;
 import com.kth.aibook.entity.story.StoryPage;
@@ -13,6 +14,8 @@ import com.kth.aibook.repository.story.StoryPageRepository;
 import com.kth.aibook.repository.story.StoryRepository;
 import com.kth.aibook.service.story.StoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +25,6 @@ public class StoryServiceImpl implements StoryService {
     private final StoryRepository storyRepository;
     private final StoryPageRepository storyPageRepository;
     private final MemberRepository memberRepository;
-
     @Override
     public Long createBaseStory(long memberId, BaseStoryCreateRequestDto createRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(()
