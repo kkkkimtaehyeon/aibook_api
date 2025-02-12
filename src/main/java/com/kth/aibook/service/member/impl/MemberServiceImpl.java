@@ -2,6 +2,7 @@ package com.kth.aibook.service.member.impl;
 
 import com.kth.aibook.dto.member.MemberCreateRequestDto;
 import com.kth.aibook.dto.member.MemberDto;
+import com.kth.aibook.dto.member.MemberSimpleDto;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.member.OauthMember;
 import com.kth.aibook.exception.member.MemberNotFoundException;
@@ -33,6 +34,15 @@ public class MemberServiceImpl implements MemberService {
         savedMember.setOauthMember(oauthMember);
 
         return savedMember.getId();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public MemberSimpleDto getMemberSimpleInfoById(Long memberId) {
+        Member member = memberRepository
+                .findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+        return new MemberSimpleDto(memberId, member.getNickName());
     }
 
     @Transactional(readOnly = true)

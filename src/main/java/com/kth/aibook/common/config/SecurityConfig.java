@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stories/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/stories/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
                 .requestMatchers("/token").permitAll()
                 .anyRequest().permitAll() // 임시로 모든 요청 허용
         );
