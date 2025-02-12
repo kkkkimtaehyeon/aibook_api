@@ -24,17 +24,18 @@ public class SecurityConfig {
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+        http.cors(cors -> cors.configure(http));
+
         http.authorizeHttpRequests(path -> path
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //preFlight를 위한 option 허용
                 .requestMatchers("/login/**", "/oauth2/authorization/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/stories/**").permitAll()
-//                .requestMatchers(HttpMethod.POST, "/api/stories/**").authenticated()
-//                .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
-//                .requestMatchers(HttpMethod.GET, "/api/logout").authenticated()
-                .anyRequest().authenticated() // 임시로 모든 요청 허용
+                .anyRequest().authenticated()
         );
 
         return http.build();
     }
 }
+
+
+
