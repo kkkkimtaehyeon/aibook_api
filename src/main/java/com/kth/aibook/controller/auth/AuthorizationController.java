@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,5 +50,11 @@ public class AuthorizationController {
         Long memberId = Long.valueOf(userDetail.getUsername());
         MemberSimpleDto memberSimpleDto = memberService.getMemberSimpleInfoById(memberId);
         return ApiResponse.success(HttpStatus.OK, memberSimpleDto);
+    }
+
+    @GetMapping("/api/logout")
+    public ApiResponse<?> logout() {
+        SecurityContextHolder.clearContext();
+        return ApiResponse.success(HttpStatus.OK, null);
     }
 }

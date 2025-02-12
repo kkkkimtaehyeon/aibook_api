@@ -29,10 +29,10 @@ public class SecurityConfig {
                 .requestMatchers("/login/**", "/oauth2/authorization/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stories/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/stories/**").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
-                .requestMatchers("/token").permitAll()
-                .anyRequest().permitAll() // 임시로 모든 요청 허용
+//                .requestMatchers(HttpMethod.POST, "/api/stories/**").authenticated()
+//                .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
+//                .requestMatchers(HttpMethod.GET, "/api/logout").authenticated()
+                .anyRequest().authenticated() // 임시로 모든 요청 허용
         );
 
         return http.build();
