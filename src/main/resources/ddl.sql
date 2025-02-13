@@ -43,5 +43,14 @@ CREATE TABLE story_page
     story_id      BIGINT       NOT NULL,
     PRIMARY KEY (story_page_id),
     FOREIGN KEY (story_id) REFERENCES story (story_id)
+);
 
-)
+CREATE TABLE story_like
+(
+    story_like_id BIGINT NOT NULL AUTO_INCREMENT,
+    member_id     BIGINT NOT NULL,
+    story_id      BIGINT NOT NULL,
+    PRIMARY KEY (story_like_id),
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    FOREIGN KEY (story_id) REFERENCES story (story_id)
+);

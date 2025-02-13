@@ -5,6 +5,7 @@ import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
 import com.kth.aibook.dto.story.StoryCompleteRequestDto;
 import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
+import com.kth.aibook.service.story.StoryLikeService;
 import com.kth.aibook.service.story.StoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class StoryController {
     private final StoryService storyService;
+    private final StoryLikeService storyLikeService;
 
     // 동화 기초이야기 저장
     @PostMapping("/base-story")
@@ -44,5 +46,14 @@ public class StoryController {
                                            @RequestBody StoryCompleteRequestDto completeRequest) {
         Long completedStoryId = storyService.completeStory(storyId, completeRequest);
         return ApiResponse.success(HttpStatus.CREATED, completedStoryId);
+    }
+
+    // 동화 좋아요
+    @PostMapping("/{story-id}/like")
+    public ApiResponse<Void> likeStory(@PathVariable("story-id") Long storyId,
+                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long memberId = userDetails.getMemberId();
+        storyLikeService.likeStory(memberId, storyId);
+        return ApiResponse.success(HttpStatus.OK, null);
     }
 }

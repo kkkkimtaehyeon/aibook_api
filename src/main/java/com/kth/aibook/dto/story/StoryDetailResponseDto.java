@@ -16,6 +16,7 @@ public class StoryDetailResponseDto {
     private Long memberId;
     private String author;
     private List<StoryPageDto> pages;
+    private boolean isLiked = false;
 
     public StoryDetailResponseDto(Story story) {
         this.storyId = story.getId();

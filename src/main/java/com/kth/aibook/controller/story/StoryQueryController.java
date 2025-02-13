@@ -33,9 +33,14 @@ public class StoryQueryController {
 
     // 동화 상세조회
     @GetMapping("/{story-id}")
-    public ApiResponse<StoryDetailResponseDto> getStory(@PathVariable("story-id") Long storyId) {
-        log.info("story id : {}", storyId);
-        StoryDetailResponseDto storyDetail = storyQueryService.getStory(storyId);
+    public ApiResponse<StoryDetailResponseDto> getStory(@PathVariable("story-id") Long storyId,
+                                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // 로그인한 회원이면 좋아요 정보도 같이 가져옴
+        StoryDetailResponseDto storyDetail;
+        if (userDetails != null) {
+
+        }
+        storyDetail = storyQueryService.getStory(storyId);
         return ApiResponse.success(HttpStatus.OK, storyDetail);
     }
 
