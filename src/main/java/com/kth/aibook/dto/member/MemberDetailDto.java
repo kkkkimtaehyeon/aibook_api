@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
-public class MemberDto {
+public class MemberDetailDto {
     private final Long memberId;
     private final String email;
     private final String nickName;
@@ -16,7 +16,7 @@ public class MemberDto {
     private final LocalDateTime createdAt;
     private final MemberRole role;
 
-    public MemberDto (Member entity) {
+    public MemberDetailDto(Member entity) {
         this.memberId = entity.getId();
         this.email = entity.getEmail();
         this.nickName = entity.getNickName();

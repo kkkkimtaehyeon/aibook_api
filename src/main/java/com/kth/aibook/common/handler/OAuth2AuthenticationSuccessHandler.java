@@ -1,7 +1,7 @@
 package com.kth.aibook.common.handler;
 
 import com.kth.aibook.common.provider.JwtProvider;
-import com.kth.aibook.dto.member.MemberDto;
+import com.kth.aibook.dto.member.MemberDetailDto;
 import com.kth.aibook.exception.member.MemberNotFoundException;
 import com.kth.aibook.service.member.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +26,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
         String email = user.getAttribute("email");
         try {
-            MemberDto memberDto = memberService.getMemberByEmail(email);
+            MemberDetailDto memberDetailDto = memberService.getMemberByEmail(email);
 
         } catch (MemberNotFoundException e) {
             // 회원이 없으면 회원가입

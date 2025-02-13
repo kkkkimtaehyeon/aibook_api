@@ -21,15 +21,19 @@ public class StoryQueryServiceImpl implements StoryQueryService {
     private final StoryRepository storyRepository;
 
     @Override
-    public Page<StorySimpleResponseDto> getStories(Pageable pageable) {
-        return storyQueryRepository.findStoryPages(pageable);
+    public Page<StorySimpleResponseDto> getPublicStories(Pageable pageable) {
+        return storyQueryRepository.findStoryPages(pageable, true);
+    }
+
+    @Override
+    public Page<StorySimpleResponseDto> getMyStories(Long memberId, Pageable pageable) {
+        return storyQueryRepository.findMyStoryPages(memberId, pageable);
     }
 
     @Override
     public StoryDetailResponseDto getStory(Long storyId) {
         Story story = storyRepository.findById(storyId).orElseThrow(()
                 -> new StoryNotFoundException("존재하지 않는 동화입니다."));
-
         return new StoryDetailResponseDto(story);
     }
 }

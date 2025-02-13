@@ -1,7 +1,7 @@
 package com.kth.aibook.service.member.impl;
 
 import com.kth.aibook.dto.member.MemberCreateRequestDto;
-import com.kth.aibook.dto.member.MemberDto;
+import com.kth.aibook.dto.member.MemberDetailDto;
 import com.kth.aibook.dto.member.MemberSimpleDto;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.member.OauthMember;
@@ -47,23 +47,32 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public MemberDto getMemberByEmail(String email) {
+    public MemberDetailDto getMemberByEmail(String email) {
         Member member = memberRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-        return new MemberDto(member);
+        return new MemberDetailDto(member);
     }
 
     @Transactional
     @Override
-    public MemberDto getMemberByOauthMemberId(String oauthProvider, long oauthProviderMemberId) {
+    public MemberDetailDto getMemberByOauthMemberId(String oauthProvider, long oauthProviderMemberId) {
         OauthMember oauthMember = oauthMemberRepository
                 .findOauthMember(oauthProvider, oauthProviderMemberId)
                 .orElseGet(() -> saveOauthMember(oauthProvider, oauthProviderMemberId));
         Member member = memberRepository
                 .findByOauthMember(oauthMember)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-        return new MemberDto(member);
+        return new MemberDetailDto(member);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public MemberDetailDto getMemberDetailInfoById(Long memberId) {
+        Member member = memberRepository
+                .findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+        return new MemberDetailDto(member);
     }
 
     private OauthMember saveOauthMember(String oauthProvider, long oauthProviderMemberId) {

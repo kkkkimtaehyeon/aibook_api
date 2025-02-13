@@ -1,7 +1,7 @@
 package com.kth.aibook.common.provider;
 
 import com.kth.aibook.common.CustomUserDetails;
-import com.kth.aibook.dto.member.MemberDto;
+import com.kth.aibook.dto.member.MemberDetailDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -35,8 +35,8 @@ public class JwtProvider {
         this.key = Keys.hmacShaKeyFor(byteSecretKey);
     }
 
-    public String generateAccessToken(MemberDto memberDto) {
-        return generateJwt(memberDto, accessDuration);
+    public String generateAccessToken(MemberDetailDto memberDetailDto) {
+        return generateJwt(memberDetailDto, accessDuration);
     }
 
     public void validateToken(String token) {
@@ -80,11 +80,11 @@ public class JwtProvider {
         return List.of(new SimpleGrantedAuthority(role));
     }
 
-    private String generateJwt(MemberDto memberDto, long duration) {
+    private String generateJwt(MemberDetailDto memberDetailDto, long duration) {
         long currentMillis = System.currentTimeMillis();
         return Jwts.builder()
-                .setSubject(String.valueOf(memberDto.getMemberId()))
-                .claim("role", memberDto.getRole())
+                .setSubject(String.valueOf(memberDetailDto.getMemberId()))
+                .claim("role", memberDetailDto.getRole())
                 .setIssuedAt(new Date(currentMillis))
                 .setExpiration(new Date(currentMillis + duration))
                 .signWith(key, SignatureAlgorithm.HS256)

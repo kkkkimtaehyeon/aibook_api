@@ -1,6 +1,7 @@
 package com.kth.aibook.controller.story;
 
 import com.kth.aibook.common.ApiResponse;
+import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.story.StoryDetailResponseDto;
 import com.kth.aibook.dto.story.StorySimpleResponseDto;
 import com.kth.aibook.service.story.StoryQueryService;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +27,7 @@ public class StoryQueryController {
     // 동화목록 조회
     @GetMapping
     public ApiResponse<Page<StorySimpleResponseDto>> getStories(Pageable pageable) {
-        Page<StorySimpleResponseDto> storyPages = storyQueryService.getStories(pageable);
+        Page<StorySimpleResponseDto> storyPages = storyQueryService.getPublicStories(pageable);
         return ApiResponse.success(HttpStatus.OK, storyPages);
     }
 
@@ -35,5 +37,13 @@ public class StoryQueryController {
         log.info("story id : {}", storyId);
         StoryDetailResponseDto storyDetail = storyQueryService.getStory(storyId);
         return ApiResponse.success(HttpStatus.OK, storyDetail);
+    }
+
+    @GetMapping("/my")
+    public ApiResponse<Page<StorySimpleResponseDto>> getMyStories(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                  Pageable pageable) {
+        Long memberId = userDetails.getMemberId();
+        Page<StorySimpleResponseDto> storyPages = storyQueryService.getMyStories(memberId, pageable);
+        return ApiResponse.success(HttpStatus.OK, storyPages);
     }
 }

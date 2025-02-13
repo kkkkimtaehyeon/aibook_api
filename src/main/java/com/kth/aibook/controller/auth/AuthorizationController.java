@@ -3,7 +3,7 @@ package com.kth.aibook.controller.auth;
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.common.provider.JwtProvider;
-import com.kth.aibook.dto.member.MemberDto;
+import com.kth.aibook.dto.member.MemberDetailDto;
 import com.kth.aibook.dto.member.MemberSimpleDto;
 import com.kth.aibook.dto.oauth.KakaoOauthProviderDto;
 import com.kth.aibook.exception.member.MemberNotFoundException;
@@ -32,24 +32,13 @@ public class AuthorizationController {
         String accessToken = kakaoAuthenticationService.getAccessToken(code);
         long oauthProviderMemberId = kakaoAuthenticationService.getId(accessToken);
         try {
-            MemberDto memberDto = memberService.getMemberByOauthMemberId("kakao", oauthProviderMemberId);
+            MemberDetailDto memberDetailDto = memberService.getMemberByOauthMemberId("kakao", oauthProviderMemberId);
 
-            String token = jwtProvider.generateAccessToken(memberDto);
+            String token = jwtProvider.generateAccessToken(memberDetailDto);
             return ApiResponse.success(HttpStatus.OK, token);
         } catch (MemberNotFoundException e) {
             return ApiResponse.success(HttpStatus.FORBIDDEN, new KakaoOauthProviderDto("kakao", oauthProviderMemberId));
         }
-    }
-
-    // 회원정보
-    @GetMapping("/api/me")
-    public ApiResponse<MemberSimpleDto> getMyInfo(@AuthenticationPrincipal CustomUserDetails userDetail) {
-        if (userDetail == null) {
-            throw new MemberNotFoundException("회원 정보를 가져오는 중 오류가 발생했습니다.");
-        }
-        Long memberId = Long.valueOf(userDetail.getUsername());
-        MemberSimpleDto memberSimpleDto = memberService.getMemberSimpleInfoById(memberId);
-        return ApiResponse.success(HttpStatus.OK, memberSimpleDto);
     }
 
     @GetMapping("/api/logout")
@@ -57,4 +46,6 @@ public class AuthorizationController {
         SecurityContextHolder.clearContext();
         return ApiResponse.success(HttpStatus.OK, null);
     }
+
+
 }

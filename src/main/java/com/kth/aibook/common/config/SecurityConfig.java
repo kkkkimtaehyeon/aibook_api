@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //preFlight를 위한 option 허용
                 .requestMatchers("/login/**", "/oauth2/authorization/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/stories/**").permitAll()
                 .anyRequest().authenticated()
         );
 
