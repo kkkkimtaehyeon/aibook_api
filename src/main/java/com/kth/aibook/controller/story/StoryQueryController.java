@@ -36,11 +36,7 @@ public class StoryQueryController {
     public ApiResponse<StoryDetailResponseDto> getStory(@PathVariable("story-id") Long storyId,
                                                         @AuthenticationPrincipal CustomUserDetails userDetails) {
         // 로그인한 회원이면 좋아요 정보도 같이 가져옴
-        StoryDetailResponseDto storyDetail;
-        if (userDetails != null) {
-
-        }
-        storyDetail = storyQueryService.getStory(storyId);
+        StoryDetailResponseDto storyDetail = storyQueryService.getStory(storyId, userDetails);
         return ApiResponse.success(HttpStatus.OK, storyDetail);
     }
 
