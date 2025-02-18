@@ -74,17 +74,23 @@ public class StoryQueryRepository {
 
     public Page<StorySimpleResponseDto> findStoryPages(Pageable pageable, Boolean isPublic) {
         List<StorySimpleResponseDto> contentResult = queryFactory
-                .select(Projections.fields(
-                        StorySimpleResponseDto.class,
-                        story.id.as("storyId"),
-                        story.title.as("title"),
-                        member.id.as("memberId"),
-                        member.nickName.as("memberName"),
-                        story.viewCount.as("viewCount")
+                .select(new QStorySimpleResponseDto(
+                        story.id,
+                        story.title,
+                        member.id,
+                        member.nickName,
+                        story.viewCount,
+                        storyLike.count()
                 ))
                 .from(story)
                 .innerJoin(member).on(member.eq(story.member))
+                .leftJoin(storyLike).on(storyLike.story.eq(story))
                 .where(eqIsPublic(isPublic))
+                .groupBy(story.id,
+                        story.title,
+                        member.id,
+                        member.nickName,
+                        story.viewCount)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -100,17 +106,23 @@ public class StoryQueryRepository {
 
     public Page<StorySimpleResponseDto> findMyStoryPages(Long memberId, Pageable pageable) {
         List<StorySimpleResponseDto> contentResult = queryFactory
-                .select(Projections.fields(
-                        StorySimpleResponseDto.class,
-                        story.id.as("storyId"),
-                        story.title.as("title"),
-                        member.id.as("memberId"),
-                        member.nickName.as("memberName"),
-                        story.viewCount.as("viewCount")
+                .select(new QStorySimpleResponseDto(
+                        story.id,
+                        story.title,
+                        member.id,
+                        member.nickName,
+                        story.viewCount,
+                        storyLike.count()
                 ))
                 .from(story)
                 .innerJoin(member).on(member.eq(story.member))
+                .leftJoin(storyLike).on(storyLike.story.eq(story))
                 .where(member.id.eq(memberId))
+                .groupBy(story.id,
+                        story.title,
+                        member.id,
+                        member.nickName,
+                        story.viewCount)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
