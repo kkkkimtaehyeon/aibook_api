@@ -14,6 +14,7 @@ public class StoryDetailResponseDto {
     private String title;
     private Long memberId;
     private String author;
+    private Long viewCount;
     private List<StoryPageDto> pages;
     private boolean isLiked = false;
 
@@ -21,6 +22,7 @@ public class StoryDetailResponseDto {
         this.storyId = story.getId();
         this.title = story.getTitle();
         this.memberId = story.getMember().getId();
+        this.viewCount = story.getViewCount();
         this.author = story.getMember().getNickName();
         this.pages = story.getStoryPages().stream().map(StoryPageDto::new).toList();
     }
@@ -30,6 +32,7 @@ public class StoryDetailResponseDto {
         this.title = story.getTitle();
         this.memberId = story.getMember().getId();
         this.author = story.getMember().getNickName();
+        this.viewCount = story.getViewCount();
         this.pages = story.getStoryPages().stream().map(StoryPageDto::new).toList();
         this.isLiked = isLiked;
     }

@@ -15,28 +15,50 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(readOnly = true)
+import java.util.List;
+
+
 @RequiredArgsConstructor
 @Service
 public class StoryQueryServiceImpl implements StoryQueryService {
     private final StoryQueryRepository storyQueryRepository;
     private final StoryRepository storyRepository;
     private final StoryLikeRepository storyLikeRepository;
+    private static final int MOST_VIEWED_STORY_SIZE = 4;
+    private static final int MOST_LIKED_STORY_SIZE = 4;
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<StorySimpleResponseDto> getMostViewedStories() {
+        return storyQueryRepository.findMostViewedStories(MOST_VIEWED_STORY_SIZE);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<StorySimpleResponseDto> getMostLikedStories() {
+        return storyQueryRepository.findMostLikedStories(MOST_LIKED_STORY_SIZE);
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public Page<StorySimpleResponseDto> getPublicStories(Pageable pageable) {
         return storyQueryRepository.findStoryPages(pageable, true);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<StorySimpleResponseDto> getMyStories(Long memberId, Pageable pageable) {
         return storyQueryRepository.findMyStoryPages(memberId, pageable);
     }
 
+    @Transactional
     @Override
     public StoryDetailResponseDto getStory(Long storyId, CustomUserDetails userDetails) {
         Story story = storyRepository.findById(storyId).orElseThrow(()
                 -> new StoryNotFoundException("존재하지 않는 동화입니다."));
+        // 조회수 1 증가
+        story.increaseViewCount(1);
+
         if (userDetails != null) {
             Long memberId = userDetails.getMemberId();
             boolean isLiked = isLiked(memberId, storyId);

@@ -30,10 +30,12 @@ CREATE TABLE story
     title      VARCHAR(100),
     created_at DATETIME,
     is_public  TINYINT(1),
+    view_count BIGINT NOT NULL DEFAULT 0,
     member_id  BIGINT NOT NULL,
     PRIMARY KEY (story_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id)
 );
+alter table story add column
 
 CREATE TABLE story_page
 (

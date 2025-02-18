@@ -34,6 +34,10 @@ public class Story {
     @Column(columnDefinition = "TINYINT", nullable = true)
     private boolean isPublic;
 
+    @ColumnDefault(value = "0")
+    @Column(columnDefinition = "BIGINT", nullable = false)
+    private Long viewCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -60,5 +64,9 @@ public class Story {
         this.title = completeRequest.title();
         this.isPublic = completeRequest.isPublic();
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void increaseViewCount(int increaseViewCount) {
+        this.viewCount += increaseViewCount;
     }
 }

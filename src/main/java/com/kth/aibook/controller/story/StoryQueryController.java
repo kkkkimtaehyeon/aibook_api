@@ -17,12 +17,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RequestMapping("/api/stories")
 @RestController
 public class StoryQueryController {
     private static final Logger log = LoggerFactory.getLogger(StoryQueryController.class);
     private final StoryQueryService storyQueryService;
+
+    @GetMapping("/most-viewed")
+    public ApiResponse<List<StorySimpleResponseDto>> getMostViewedStories() {
+        List<StorySimpleResponseDto> mostViewedStories = storyQueryService.getMostViewedStories();
+        return ApiResponse.success(HttpStatus.OK, mostViewedStories);
+    }
+
+    @GetMapping("/most-liked")
+    public ApiResponse<List<StorySimpleResponseDto>> getMostLikedStories() {
+        List<StorySimpleResponseDto> mostLikedStories = storyQueryService.getMostLikedStories();
+        return ApiResponse.success(HttpStatus.OK, mostLikedStories);
+    }
 
     // 동화목록 조회
     @GetMapping
