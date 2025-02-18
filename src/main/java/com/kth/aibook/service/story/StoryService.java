@@ -11,4 +11,6 @@ public interface StoryService {
 
     Long completeStory(Long storyId, StoryCompleteRequestDto completeRequest);
 
+    void removeStory(Long storyId);
+
 }

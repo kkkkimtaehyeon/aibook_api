@@ -56,4 +56,10 @@ public class StoryController {
         storyLikeService.likeStory(memberId, storyId);
         return ApiResponse.success(HttpStatus.OK, null);
     }
+
+    @DeleteMapping("/{story-id}")
+    public ApiResponse<Void> deleteStory(@PathVariable("story-id") Long storyId) {
+        storyService.removeStory(storyId);
+        return ApiResponse.success(HttpStatus.NO_CONTENT, null);
+    }
 }

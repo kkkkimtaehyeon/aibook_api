@@ -25,6 +25,7 @@ public class StoryServiceImpl implements StoryService {
     private final StoryRepository storyRepository;
     private final StoryPageRepository storyPageRepository;
     private final MemberRepository memberRepository;
+
     @Override
     public Long createBaseStory(long memberId, BaseStoryCreateRequestDto createRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(()
@@ -56,6 +57,15 @@ public class StoryServiceImpl implements StoryService {
         story.completeStory(completeRequest);
 
         return story.getId();
+    }
+
+    @Override
+    public void removeStory(Long storyId) {
+        boolean isExists = storyRepository.existsById(storyId);
+        if (!isExists) {
+            throw new StoryNotFoundException("존재하지 않는 동화입니다.");
+        }
+        storyRepository.deleteById(storyId);
     }
 
     private Story findStory(Long storyId) {
