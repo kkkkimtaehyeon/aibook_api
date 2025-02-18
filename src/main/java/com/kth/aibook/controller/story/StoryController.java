@@ -5,6 +5,7 @@ import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
 import com.kth.aibook.dto.story.StoryCompleteRequestDto;
 import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
+import com.kth.aibook.service.cloud.CloudStorageService;
 import com.kth.aibook.service.story.StoryLikeService;
 import com.kth.aibook.service.story.StoryService;
 import jakarta.validation.Valid;
@@ -12,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/stories")
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class StoryController {
     private final StoryService storyService;
     private final StoryLikeService storyLikeService;
+    private final CloudStorageService cloudStorageService;
 
     // 동화 기초이야기 저장
     @PostMapping("/base-story")
@@ -57,9 +62,19 @@ public class StoryController {
         return ApiResponse.success(HttpStatus.OK, null);
     }
 
+    // 동화 삭제
     @DeleteMapping("/{story-id}")
     public ApiResponse<Void> deleteStory(@PathVariable("story-id") Long storyId) {
         storyService.removeStory(storyId);
         return ApiResponse.success(HttpStatus.NO_CONTENT, null);
+    }
+
+    // 동화 더빙 업로드
+    @PostMapping("/{story-id}/dubbing")
+    public ApiResponse<?> uploadDubbing(@PathVariable("story-id") Long storyId,
+                                        @RequestParam("files") List<MultipartFile> files) {
+        cloudStorageService.uploadFile(files.getFirst());
+
+        return null;
     }
 }
