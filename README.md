@@ -20,8 +20,8 @@
 - [x] Page를 저장
 - [x] Story(제목, 공개여부)를 업데이트
 - [ ] Story에 맞는 Tag를 저장
-- [ ] public Story 목록을 조회 (비회원도 조회 가능)
-- [ ] private Story 목록을 조회 (회원 본인만 조회 가능)
+- [x] public Story 목록을 조회 (비회원도 조회 가능)
+- [x] private Story 목록을 조회 (회원 본인만 조회 가능)
 - [ ] Story를 검색
 - [ ] Story를 정렬 (날짜, 조회수, 추천 등) 
 - [x] Story 상세 조회
