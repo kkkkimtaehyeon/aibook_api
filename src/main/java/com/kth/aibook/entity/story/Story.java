@@ -36,7 +36,7 @@ public class Story {
 
     @ColumnDefault(value = "0")
     @Column(columnDefinition = "BIGINT", nullable = false)
-    private Long viewCount;
+    private Long viewCount = 0L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

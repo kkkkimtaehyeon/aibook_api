@@ -20,9 +20,6 @@ CREATE TABLE oauth_member
     primary key (oauth_member_id)
 );
 
-delete
-from oauth_member;
-
 CREATE TABLE story
 (
     story_id   BIGINT NOT NULL AUTO_INCREMENT,
@@ -33,9 +30,8 @@ CREATE TABLE story
     view_count BIGINT NOT NULL DEFAULT 0,
     member_id  BIGINT NOT NULL,
     PRIMARY KEY (story_id),
-    FOREIGN KEY (member_id) REFERENCES member (member_id)
+    FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE
 );
-alter table story add column
 
 CREATE TABLE story_page
 (
@@ -43,8 +39,9 @@ CREATE TABLE story_page
     page_number   TINYINT      NOT NULL,
     content       VARCHAR(300) NOT NULL,
     story_id      BIGINT       NOT NULL,
+    dubbing_audio_url VARCHAR(300) NULL,
     PRIMARY KEY (story_page_id),
-    FOREIGN KEY (story_id) REFERENCES story (story_id)
+    FOREIGN KEY (story_id) REFERENCES story (story_id) ON DELETE CASCADE
 );
 
 CREATE TABLE story_like
@@ -53,6 +50,12 @@ CREATE TABLE story_like
     member_id     BIGINT NOT NULL,
     story_id      BIGINT NOT NULL,
     PRIMARY KEY (story_like_id),
-    FOREIGN KEY (member_id) REFERENCES member (member_id),
-    FOREIGN KEY (story_id) REFERENCES story (story_id)
+    FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT ,
+    FOREIGN KEY (story_id) REFERENCES story (story_id) ON DELETE CASCADE
 );
+
+
+
+drop table story_page;
+drop table story_like;
+drop table story;

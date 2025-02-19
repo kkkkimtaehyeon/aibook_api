@@ -43,10 +43,12 @@ public class StoryDetailResponseDto {
 class StoryPageDto {
     private int pageNumber;
     private String content;
+    private String dubbingAudioUrl;
 
     public StoryPageDto(StoryPage storyPage) {
         this.pageNumber = storyPage.getPageNumber();
         this.content = storyPage.getContent();
+        this.dubbingAudioUrl = storyPage.getDubbingAudioUrl();
     }
 }
 

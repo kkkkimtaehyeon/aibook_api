@@ -3,7 +3,6 @@ package com.kth.aibook.service.story.impl;
 import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
 import com.kth.aibook.dto.story.StoryCompleteRequestDto;
 import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
-import com.kth.aibook.dto.story.StorySimpleResponseDto;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.story.Story;
 import com.kth.aibook.entity.story.StoryPage;
@@ -12,12 +11,14 @@ import com.kth.aibook.exception.story.StoryNotFoundException;
 import com.kth.aibook.repository.member.MemberRepository;
 import com.kth.aibook.repository.story.StoryPageRepository;
 import com.kth.aibook.repository.story.StoryRepository;
+import com.kth.aibook.service.cloud.CloudStorageService;
 import com.kth.aibook.service.story.StoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -25,6 +26,8 @@ public class StoryServiceImpl implements StoryService {
     private final StoryRepository storyRepository;
     private final StoryPageRepository storyPageRepository;
     private final MemberRepository memberRepository;
+
+    private final CloudStorageService cloudStorageService;
 
     @Override
     public Long createBaseStory(long memberId, BaseStoryCreateRequestDto createRequest) {
@@ -68,8 +71,30 @@ public class StoryServiceImpl implements StoryService {
         storyRepository.deleteById(storyId);
     }
 
+    // 더비 추가
+    @Transactional
+    @Override
+    public void addDubbings(Long storyId, List<MultipartFile> files) {
+        Story story = findStory(storyId);
+        List<StoryPage> pages = story.getStoryPages();
+        files.forEach(file -> {
+            int pageNumber = extractPageNumber(file);
+            String dubbingAudioUrl = cloudStorageService.uploadFile(file);
+            pages.get(pageNumber).addDubbing(dubbingAudioUrl);
+        });
+    }
+
     private Story findStory(Long storyId) {
         return storyRepository.findById(storyId).orElseThrow(()
                 -> new StoryNotFoundException("존재하지 않는 동화입니다."));
+    }
+
+    private int extractPageNumber(MultipartFile file) {
+        String ogFileName = file.getOriginalFilename();
+        if (ogFileName == null) {
+            throw new RuntimeException("파일 이름을 찾을 수 없습니다.");
+        }
+        String pageNumber = ogFileName.split("-")[3].split("\\.")[0];
+        return Integer.parseInt(pageNumber) - 1;
     }
 }

@@ -18,7 +18,7 @@ public class StoryLike {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "story_id")
     private Story story;
 

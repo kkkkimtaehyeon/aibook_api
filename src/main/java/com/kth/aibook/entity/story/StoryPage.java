@@ -21,8 +21,11 @@ public class StoryPage {
     @Column(nullable = false, length = 300)
     private String content;
 
+    @Column(length = 300)
+    private String dubbingAudioUrl;
+
     @Setter
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "story_id")
     private Story story;
 
@@ -32,5 +35,9 @@ public class StoryPage {
         this.pageNumber = pageNumber;
         this.content = content;
         this.story = story;
+    }
+
+    public void addDubbing(String dubbingAudioUrl) {
+        this.dubbingAudioUrl = dubbingAudioUrl;
     }
 }

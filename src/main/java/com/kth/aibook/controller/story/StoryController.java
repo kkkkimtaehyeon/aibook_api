@@ -71,10 +71,9 @@ public class StoryController {
 
     // 동화 더빙 업로드
     @PostMapping("/{story-id}/dubbing")
-    public ApiResponse<?> uploadDubbing(@PathVariable("story-id") Long storyId,
-                                        @RequestParam("files") List<MultipartFile> files) {
-        cloudStorageService.uploadFile(files.getFirst());
-
-        return null;
+    public ApiResponse<?> addDubbing(@PathVariable("story-id") Long storyId,
+                                     @RequestParam("files") List<MultipartFile> files) {
+        storyService.addDubbings(storyId, files);
+        return ApiResponse.success(HttpStatus.OK, null);
     }
 }
