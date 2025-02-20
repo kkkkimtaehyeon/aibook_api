@@ -3,16 +3,17 @@ package com.kth.aibook.repository.story;
 import com.kth.aibook.dto.story.QStorySimpleResponseDto;
 import com.kth.aibook.dto.story.StorySearchRequestDto;
 import com.kth.aibook.dto.story.StorySimpleResponseDto;
+import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -96,6 +97,7 @@ public class StoryQueryRepository {
                         member.id,
                         member.nickName,
                         story.viewCount)
+                .orderBy(getDynamicOrder(searchRequest))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -108,41 +110,6 @@ public class StoryQueryRepository {
 
         return new PageImpl<>(contentResult, pageable, total);
     }
-
-//    public Page<StorySimpleResponseDto> findStoryPagesWithSearch(Pageable pageable, StorySearchRequestDto searchRequest, Boolean isPublic) {
-//        List<StorySimpleResponseDto> contentResult = queryFactory
-//                .select(new QStorySimpleResponseDto(
-//                        story.id,
-//                        story.title,
-//                        member.id,
-//                        member.nickName,
-//                        story.viewCount,
-//                        storyLike.count()
-//                ))
-//                .from(story)
-//                .innerJoin(member).on(member.eq(story.member))
-//                .leftJoin(storyLike).on(storyLike.story.eq(story))
-//                .where(
-//                        eqIsPublic(isPublic),
-//                        likeSearchKeyword(searchRequest)
-//                )
-//                .groupBy(story.id,
-//                        story.title,
-//                        member.id,
-//                        member.nickName,
-//                        story.viewCount)
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .fetch();
-//
-//        Long countResult = queryFactory
-//                .select(story.count())
-//                .from(story)
-//                .fetchOne();
-//        long total = countResult != null ? countResult : 0;
-//
-//        return new PageImpl<>(contentResult, pageable, total);
-//    }
 
     public Page<StorySimpleResponseDto> findMyStoryPages(Long memberId, Pageable pageable) {
         List<StorySimpleResponseDto> contentResult = queryFactory
@@ -183,6 +150,28 @@ public class StoryQueryRepository {
         return story.isPublic.eq(false);
     }
 
+    private OrderSpecifier<?> getDynamicOrder(StorySearchRequestDto searchRequest) {
+        String sortBy = searchRequest.sortBy();
+        String sortDir = searchRequest.sortDir();
+        if (sortBy == null || sortDir == null) {
+            return new OrderSpecifier<>(Order.DESC, story.createdAt);
+        }
+        Order orderDirection = getDirection(sortDir);
+
+        return switch (sortBy) {
+            case "createAt" -> new OrderSpecifier<>(orderDirection, story.createdAt);
+            case "viewCount" -> new OrderSpecifier<>(orderDirection, story.viewCount);
+            case "likeCount" -> new OrderSpecifier<>(orderDirection, storyLike.count());
+            default -> new OrderSpecifier<>(Order.DESC, story.createdAt);
+        };
+    }
+
+    private Order getDirection(String sortOrder) {
+        if (sortOrder.equals("desc")) {
+            return Order.DESC;
+        }
+        return Order.ASC;
+    }
 
     private BooleanExpression likeSearchKeyword(StorySearchRequestDto searchRequest) {
         BooleanExpression result = null;
