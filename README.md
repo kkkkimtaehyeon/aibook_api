@@ -23,8 +23,8 @@
 - [ ] Story에 맞는 Tag를 저장
 - [x] public Story 목록을 조회 (비회원도 조회 가능)
 - [x] private Story 목록을 조회 (회원 본인만 조회 가능)
-- [ ] Story를 검색
-- [ ] Story를 정렬 (날짜, 조회수, 추천 등) 
+- [x] Story를 검색
+- [x] Story를 정렬 (날짜, 조회수, 추천 등) 
 - [x] Story 상세 조회
 - [x] Story 삭제
 
