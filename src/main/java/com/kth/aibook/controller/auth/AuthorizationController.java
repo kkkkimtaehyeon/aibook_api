@@ -26,6 +26,11 @@ public class AuthorizationController {
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 
+    @GetMapping("/health")
+    public String healthCheck() {
+        return "healthy";
+    }
+
     // oauth 로그인
     @GetMapping("/login/oauth2/code/kakao")
     public ApiResponse<Object> kakaoLogin(@RequestParam("code") String code) {
