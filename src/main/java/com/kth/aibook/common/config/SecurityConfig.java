@@ -28,6 +28,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(path -> path
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //preFlight를 위한 option 허용
+                .requestMatchers("/health").permitAll()
                 .requestMatchers("/login/**", "/oauth2/authorization/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stories/**").permitAll()

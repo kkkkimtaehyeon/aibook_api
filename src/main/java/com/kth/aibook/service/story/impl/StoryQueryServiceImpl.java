@@ -2,6 +2,7 @@ package com.kth.aibook.service.story.impl;
 
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.story.StoryDetailResponseDto;
+import com.kth.aibook.dto.story.StorySearchRequestDto;
 import com.kth.aibook.dto.story.StorySimpleResponseDto;
 import com.kth.aibook.entity.story.Story;
 import com.kth.aibook.exception.story.StoryNotFoundException;
@@ -24,6 +25,7 @@ public class StoryQueryServiceImpl implements StoryQueryService {
     private final StoryQueryRepository storyQueryRepository;
     private final StoryRepository storyRepository;
     private final StoryLikeRepository storyLikeRepository;
+
     private static final int MOST_VIEWED_STORY_SIZE = 4;
     private static final int MOST_LIKED_STORY_SIZE = 4;
 
@@ -41,8 +43,8 @@ public class StoryQueryServiceImpl implements StoryQueryService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<StorySimpleResponseDto> getPublicStories(Pageable pageable) {
-        return storyQueryRepository.findStoryPages(pageable, true);
+    public Page<StorySimpleResponseDto> getPublicStories(Pageable pageable, StorySearchRequestDto searchRequest) {
+        return storyQueryRepository.findStoryPages(pageable, searchRequest, true);
     }
 
     @Transactional(readOnly = true)

@@ -3,6 +3,7 @@ package com.kth.aibook.controller.story;
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.story.StoryDetailResponseDto;
+import com.kth.aibook.dto.story.StorySearchRequestDto;
 import com.kth.aibook.dto.story.StorySimpleResponseDto;
 import com.kth.aibook.service.story.StoryQueryService;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,8 +38,9 @@ public class StoryQueryController {
 
     // 동화목록 조회
     @GetMapping
-    public ApiResponse<Page<StorySimpleResponseDto>> getStories(Pageable pageable) {
-        Page<StorySimpleResponseDto> storyPages = storyQueryService.getPublicStories(pageable);
+    public ApiResponse<Page<StorySimpleResponseDto>> getStories(Pageable pageable,
+                                                                StorySearchRequestDto searchRequest) {
+        Page<StorySimpleResponseDto> storyPages = storyQueryService.getPublicStories(pageable, searchRequest);
         return ApiResponse.success(HttpStatus.OK, storyPages);
     }
 

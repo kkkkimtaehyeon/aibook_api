@@ -1,10 +1,12 @@
 package com.kth.aibook.repository.story;
 
 import com.kth.aibook.dto.story.QStorySimpleResponseDto;
+import com.kth.aibook.dto.story.StorySearchRequestDto;
 import com.kth.aibook.dto.story.StorySimpleResponseDto;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.query.Order;
@@ -41,7 +43,7 @@ public class StoryQueryRepository {
                 .fetch();
     }
 
-//    좋아요 많은 동화 조회
+    //    좋아요 많은 동화 조회
 //    select s.story_id, s.title, m.member_id, m.nick_name, count(story_like_id) as likeCount
 //    from story s
 //    inner join aibook.member m on s.member_id = m.member_id
@@ -72,7 +74,7 @@ public class StoryQueryRepository {
                 .fetch();
     }
 
-    public Page<StorySimpleResponseDto> findStoryPages(Pageable pageable, Boolean isPublic) {
+    public Page<StorySimpleResponseDto> findStoryPages(Pageable pageable, StorySearchRequestDto searchRequest, Boolean isPublic) {
         List<StorySimpleResponseDto> contentResult = queryFactory
                 .select(new QStorySimpleResponseDto(
                         story.id,
@@ -85,7 +87,10 @@ public class StoryQueryRepository {
                 .from(story)
                 .innerJoin(member).on(member.eq(story.member))
                 .leftJoin(storyLike).on(storyLike.story.eq(story))
-                .where(eqIsPublic(isPublic))
+                .where(
+                        eqIsPublic(isPublic),
+                        likeSearchKeyword(searchRequest)
+                )
                 .groupBy(story.id,
                         story.title,
                         member.id,
@@ -103,6 +108,41 @@ public class StoryQueryRepository {
 
         return new PageImpl<>(contentResult, pageable, total);
     }
+
+//    public Page<StorySimpleResponseDto> findStoryPagesWithSearch(Pageable pageable, StorySearchRequestDto searchRequest, Boolean isPublic) {
+//        List<StorySimpleResponseDto> contentResult = queryFactory
+//                .select(new QStorySimpleResponseDto(
+//                        story.id,
+//                        story.title,
+//                        member.id,
+//                        member.nickName,
+//                        story.viewCount,
+//                        storyLike.count()
+//                ))
+//                .from(story)
+//                .innerJoin(member).on(member.eq(story.member))
+//                .leftJoin(storyLike).on(storyLike.story.eq(story))
+//                .where(
+//                        eqIsPublic(isPublic),
+//                        likeSearchKeyword(searchRequest)
+//                )
+//                .groupBy(story.id,
+//                        story.title,
+//                        member.id,
+//                        member.nickName,
+//                        story.viewCount)
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//        Long countResult = queryFactory
+//                .select(story.count())
+//                .from(story)
+//                .fetchOne();
+//        long total = countResult != null ? countResult : 0;
+//
+//        return new PageImpl<>(contentResult, pageable, total);
+//    }
 
     public Page<StorySimpleResponseDto> findMyStoryPages(Long memberId, Pageable pageable) {
         List<StorySimpleResponseDto> contentResult = queryFactory
@@ -141,5 +181,22 @@ public class StoryQueryRepository {
             return story.isPublic.eq(true);
         }
         return story.isPublic.eq(false);
+    }
+
+
+    private BooleanExpression likeSearchKeyword(StorySearchRequestDto searchRequest) {
+        BooleanExpression result = null;
+        String target = searchRequest.searchTarget();
+        String keyword = searchRequest.searchKey();
+
+        if (target == null || keyword == null) {
+            return null;
+        }
+        if (target.equals("title")) {
+            result = story.title.like("%" + keyword + "%");
+        } else if (target.equals("author")) {
+            result = member.nickName.like("%" + keyword + "%");
+        }
+        return result;
     }
 }
