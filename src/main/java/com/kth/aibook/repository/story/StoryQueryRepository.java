@@ -159,7 +159,7 @@ public class StoryQueryRepository {
         Order orderDirection = getDirection(sortDir);
 
         return switch (sortBy) {
-            case "createAt" -> new OrderSpecifier<>(orderDirection, story.createdAt);
+            case "createdAt" -> new OrderSpecifier<>(orderDirection, story.createdAt);
             case "viewCount" -> new OrderSpecifier<>(orderDirection, story.viewCount);
             case "likeCount" -> new OrderSpecifier<>(orderDirection, storyLike.count());
             default -> new OrderSpecifier<>(Order.DESC, story.createdAt);
