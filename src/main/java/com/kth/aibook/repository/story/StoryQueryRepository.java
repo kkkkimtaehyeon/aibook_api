@@ -130,6 +130,7 @@ public class StoryQueryRepository {
                         member.id,
                         member.nickName,
                         story.viewCount)
+                .orderBy(story.createdAt.desc()) // 기본 최신순 정렬
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

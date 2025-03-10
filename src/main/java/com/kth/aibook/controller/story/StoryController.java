@@ -5,6 +5,7 @@ import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
 import com.kth.aibook.dto.story.StoryCompleteRequestDto;
 import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
+import com.kth.aibook.dto.story.StoryPatchRequestDto;
 import com.kth.aibook.service.cloud.CloudStorageService;
 import com.kth.aibook.service.story.StoryLikeService;
 import com.kth.aibook.service.story.StoryService;
@@ -71,9 +72,17 @@ public class StoryController {
 
     // 동화 더빙 업로드
     @PostMapping("/{story-id}/dubbing")
-    public ApiResponse<?> addDubbing(@PathVariable("story-id") Long storyId,
-                                     @RequestParam("files") List<MultipartFile> files) {
+    public ApiResponse<Void> addDubbing(@PathVariable("story-id") Long storyId,
+                                        @RequestParam("files") List<MultipartFile> files) {
         storyService.addDubbings(storyId, files);
+        return ApiResponse.success(HttpStatus.OK, null);
+    }
+
+    // 동화 수정
+    @PatchMapping("/{story-id}")
+    public ApiResponse<?> patchStory(@PathVariable("story-id") Long storyId,
+                                     @RequestBody StoryPatchRequestDto patchRequest) {
+        storyService.patchStory(storyId, patchRequest);
         return ApiResponse.success(HttpStatus.OK, null);
     }
 }

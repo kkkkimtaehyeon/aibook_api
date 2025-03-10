@@ -69,4 +69,8 @@ public class Story {
     public void increaseViewCount(int increaseViewCount) {
         this.viewCount += increaseViewCount;
     }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
 }

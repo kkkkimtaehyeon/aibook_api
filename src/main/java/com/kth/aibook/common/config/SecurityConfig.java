@@ -28,6 +28,9 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(path -> path
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //preFlight를 위한 option 허용
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/ad").permitAll()
+                .requestMatchers(HttpMethod.GET, "/notion").permitAll()
                 .requestMatchers("/health").permitAll()
                 .requestMatchers("/login/**", "/oauth2/authorization/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()

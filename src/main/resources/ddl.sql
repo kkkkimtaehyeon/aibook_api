@@ -35,10 +35,10 @@ CREATE TABLE story
 
 CREATE TABLE story_page
 (
-    story_page_id BIGINT       NOT NULL AUTO_INCREMENT,
-    page_number   TINYINT      NOT NULL,
-    content       VARCHAR(300) NOT NULL,
-    story_id      BIGINT       NOT NULL,
+    story_page_id     BIGINT       NOT NULL AUTO_INCREMENT,
+    page_number       TINYINT      NOT NULL,
+    content           VARCHAR(300) NOT NULL,
+    story_id          BIGINT       NOT NULL,
     dubbing_audio_url VARCHAR(300) NULL,
     PRIMARY KEY (story_page_id),
     FOREIGN KEY (story_id) REFERENCES story (story_id) ON DELETE CASCADE
@@ -50,10 +50,19 @@ CREATE TABLE story_like
     member_id     BIGINT NOT NULL,
     story_id      BIGINT NOT NULL,
     PRIMARY KEY (story_like_id),
-    FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT ,
+    FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT,
     FOREIGN KEY (story_id) REFERENCES story (story_id) ON DELETE CASCADE
 );
 
+CREATE TABLE voice
+(
+    voice_id  BIGINT       NOT NULL AUTO_INCREMENT,
+    name      VARCHAR(20)  NOT NULL,
+    audio_url VARCHAR(500) NOT NULL,
+    member_id BIGINT       NOT NULL,
+    PRIMARY KEY (voice_id),
+    FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE
+);
 
 
 drop table story_page;

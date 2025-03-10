@@ -3,6 +3,7 @@ package com.kth.aibook.service.story.impl;
 import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
 import com.kth.aibook.dto.story.StoryCompleteRequestDto;
 import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
+import com.kth.aibook.dto.story.StoryPatchRequestDto;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.story.Story;
 import com.kth.aibook.entity.story.StoryPage;
@@ -71,7 +72,7 @@ public class StoryServiceImpl implements StoryService {
         storyRepository.deleteById(storyId);
     }
 
-    // 더비 추가
+    // 더빙 추가
     @Transactional
     @Override
     public void addDubbings(Long storyId, List<MultipartFile> files) {
@@ -83,6 +84,17 @@ public class StoryServiceImpl implements StoryService {
             pages.get(pageNumber).addDubbing(dubbingAudioUrl);
         });
     }
+
+    @Transactional
+    @Override
+    public void patchStory(Long storyId, StoryPatchRequestDto patchRequest) {
+        Story story = findStory(storyId);
+
+        if (patchRequest != null && patchRequest.getTitle() != null) {
+            story.updateTitle(patchRequest.getTitle());
+        }
+    }
+
 
     private Story findStory(Long storyId) {
         return storyRepository.findById(storyId).orElseThrow(()
