@@ -2,10 +2,7 @@ package com.kth.aibook.controller.member;
 
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
-import com.kth.aibook.dto.member.MemberCreateRequestDto;
-import com.kth.aibook.dto.member.MemberDetailDto;
-import com.kth.aibook.dto.member.MemberSimpleDto;
-import com.kth.aibook.dto.member.VoiceUploadRequestDto;
+import com.kth.aibook.dto.member.*;
 import com.kth.aibook.exception.member.MemberNotFoundException;
 import com.kth.aibook.service.cloud.CloudStorageService;
 import com.kth.aibook.service.member.MemberService;
@@ -15,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -57,6 +56,14 @@ public class MemberController {
         Long memberId = getMemberIdFromUserDetail(userDetail);
         memberService.uploadVoice(memberId, voiceUploadRequest);
         return ApiResponse.success(HttpStatus.OK, null);
+    }
+
+    // 목소리 목록 조회
+    @GetMapping("/api/voices")
+    public ApiResponse<List<VoiceDto>> getMemberVoices(@AuthenticationPrincipal CustomUserDetails userDetail) {
+        Long memberId = getMemberIdFromUserDetail(userDetail);
+        List<VoiceDto> voices = memberService.getVoices(memberId);
+        return ApiResponse.success(HttpStatus.OK, voices);
     }
 
 

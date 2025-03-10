@@ -1,9 +1,6 @@
 package com.kth.aibook.service.member.impl;
 
-import com.kth.aibook.dto.member.MemberCreateRequestDto;
-import com.kth.aibook.dto.member.MemberDetailDto;
-import com.kth.aibook.dto.member.MemberSimpleDto;
-import com.kth.aibook.dto.member.VoiceUploadRequestDto;
+import com.kth.aibook.dto.member.*;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.member.OauthMember;
 import com.kth.aibook.entity.member.Voice;
@@ -16,6 +13,8 @@ import com.kth.aibook.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -45,9 +44,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     @Override
     public MemberSimpleDto getMemberSimpleInfoById(Long memberId) {
-        Member member = memberRepository
-                .findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+        Member member = findMember(memberId);
         return new MemberSimpleDto(memberId, member.getNickName());
     }
 
@@ -75,17 +72,13 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     @Override
     public MemberDetailDto getMemberDetailInfoById(Long memberId) {
-        Member member = memberRepository
-                .findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+        Member member = findMember(memberId);
         return new MemberDetailDto(member);
     }
 
     @Override
     public Long uploadVoice(Long memberId, VoiceUploadRequestDto voiceUploadRequest) {
-        Member member = memberRepository
-                .findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+        Member member = findMember(memberId);
         String audioUrl = cloudStorageService.uploadFile(voiceUploadRequest.getAudioFile());
         Voice voice = Voice.builder()
                 .name(voiceUploadRequest.getName())
@@ -96,7 +89,19 @@ public class MemberServiceImpl implements MemberService {
         return savedVoice.getId();
     }
 
+    @Override
+    public List<VoiceDto> getVoices(Long memberId) {
+        Member member = findMember(memberId);
+        return voiceRepository.findByMember(member);
+    }
+
     private OauthMember saveOauthMember(String oauthProvider, long oauthProviderMemberId) {
         return oauthMemberRepository.save(new OauthMember(oauthProvider, oauthProviderMemberId));
+    }
+
+    private Member findMember(Long memberId) {
+        return memberRepository
+                .findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
     }
 }
