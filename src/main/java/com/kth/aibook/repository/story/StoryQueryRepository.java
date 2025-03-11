@@ -105,6 +105,10 @@ public class StoryQueryRepository {
         Long countResult = queryFactory
                 .select(story.count())
                 .from(story)
+                .where(
+                        eqIsPublic(isPublic),
+                        likeSearchKeyword(searchRequest)
+                )
                 .fetchOne();
         long total = countResult != null ? countResult : 0;
 
