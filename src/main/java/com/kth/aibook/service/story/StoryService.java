@@ -19,6 +19,8 @@ public interface StoryService {
 
     void addDubbings(Long storyId, List<MultipartFile> files);
 
+    void addVoicesDubbing(Long storyId, Long voiceId, Long memberId);
+
     void patchStory(Long storyId, StoryPatchRequestDto patchRequest);
 
 }

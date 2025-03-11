@@ -1,9 +1,7 @@
 package com.kth.aibook.service.story.impl;
 
-import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
-import com.kth.aibook.dto.story.StoryCompleteRequestDto;
-import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
-import com.kth.aibook.dto.story.StoryPatchRequestDto;
+import com.amazonaws.util.Base64;
+import com.kth.aibook.dto.story.*;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.story.Story;
 import com.kth.aibook.entity.story.StoryPage;
@@ -13,6 +11,7 @@ import com.kth.aibook.repository.member.MemberRepository;
 import com.kth.aibook.repository.story.StoryPageRepository;
 import com.kth.aibook.repository.story.StoryRepository;
 import com.kth.aibook.service.cloud.CloudStorageService;
+import com.kth.aibook.service.dubbing.DubbingService;
 import com.kth.aibook.service.story.StoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -28,6 +28,7 @@ public class StoryServiceImpl implements StoryService {
     private final StoryPageRepository storyPageRepository;
     private final MemberRepository memberRepository;
 
+    private final DubbingService dubbingService;
     private final CloudStorageService cloudStorageService;
 
     @Override
@@ -83,6 +84,28 @@ public class StoryServiceImpl implements StoryService {
             String dubbingAudioUrl = cloudStorageService.uploadFile(file);
             pages.get(pageNumber).addDubbing(dubbingAudioUrl);
         });
+    }
+
+    @Transactional
+    @Override
+    public void addVoicesDubbing(Long storyId, Long voiceId, Long memberId) {
+        Story story = findStory(storyId);
+
+        VoiceDubbingResponseDto response = dubbingService.requestVoiceDubbing(story, voiceId);
+        Map<Long, String> storyDubbingMap = response.getStoryDubbingMap();
+        // 오디오를 s3에 업로드하고 db 업데이트
+        String base64Bytes;
+        byte[] audioBytes;
+        String dubbingAudioUrl;
+        for (StoryPage storyPage: story.getStoryPages()) {
+            base64Bytes = storyDubbingMap.get(storyPage.getId());
+            if (base64Bytes == null) {
+                throw new RuntimeException("보이스 더빙 중 오류가 발생했습니다. (더빙 누락)");
+            }
+            audioBytes = Base64.decode(base64Bytes);
+            dubbingAudioUrl = cloudStorageService.uploadBytes(audioBytes, "audio/wav");
+            storyPage.addDubbing(dubbingAudioUrl);
+        }
     }
 
     @Transactional

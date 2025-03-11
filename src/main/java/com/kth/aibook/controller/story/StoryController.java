@@ -24,7 +24,6 @@ import java.util.List;
 public class StoryController {
     private final StoryService storyService;
     private final StoryLikeService storyLikeService;
-    private final CloudStorageService cloudStorageService;
 
     // 동화 기초이야기 저장
     @PostMapping("/base-story")
@@ -75,6 +74,16 @@ public class StoryController {
     public ApiResponse<Void> addDubbing(@PathVariable("story-id") Long storyId,
                                         @RequestParam("files") List<MultipartFile> files) {
         storyService.addDubbings(storyId, files);
+        return ApiResponse.success(HttpStatus.OK, null);
+    }
+
+    // 보이스 클로닝 더빙
+    @PostMapping("/{story-id}/voices/{voice-id}/dubbing")
+    public ApiResponse<?> addVoiceDubbing(@PathVariable("story-id") Long storyId,
+                                          @PathVariable("voice-id") Long voiceId,
+                                          @AuthenticationPrincipal CustomUserDetails userDetail) {
+        Long memberId = userDetail.getMemberId();
+        storyService.addVoicesDubbing(storyId, voiceId, memberId);
         return ApiResponse.success(HttpStatus.OK, null);
     }
 

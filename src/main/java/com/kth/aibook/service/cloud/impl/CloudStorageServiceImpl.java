@@ -1,16 +1,17 @@
 package com.kth.aibook.service.cloud.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.kth.aibook.service.cloud.CloudStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -24,13 +25,18 @@ public class CloudStorageServiceImpl implements CloudStorageService {
     @Override
     public String uploadFile(MultipartFile multipartFile) {
         String fileName = getUniqueFileName(multipartFile);
-        putObject(multipartFile, fileName);
+        putMultiPartFile(multipartFile, fileName);
         return fetchUrl(fileName);
     }
 
     @Override
-    public String uploadFiles(List<MultipartFile> files) {
-        return "";
+    public String uploadBytes(byte[] bytes, String format) {
+        String fileName = UUID.randomUUID().toString(); // 임의로 파일 이름 저장
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(format);
+        amazonS3.putObject(BUCKET, fileName, byteArrayInputStream, metadata);
+        return fetchUrl(fileName);
     }
 
     @Override
@@ -49,7 +55,7 @@ public class CloudStorageServiceImpl implements CloudStorageService {
         return ogFileName + UUID.randomUUID() + "." + fileExtension;
     }
 
-    private void putObject(MultipartFile multipartFile, String fileName) {
+    private void putMultiPartFile(MultipartFile multipartFile, String fileName) {
         try {
             File file = convert(multipartFile, fileName);
             amazonS3.putObject(BUCKET, fileName, file);
