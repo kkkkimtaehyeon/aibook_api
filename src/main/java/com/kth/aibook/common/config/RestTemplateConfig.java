@@ -11,8 +11,8 @@ public class RestTemplateConfig {
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(5000);
-        requestFactory.setReadTimeout(5000);
+        requestFactory.setConnectTimeout(100_000); // 100초 말이 안됨 일단 해놓음
+        requestFactory.setReadTimeout(100_000);
 
         restTemplate.setRequestFactory(requestFactory);
 
