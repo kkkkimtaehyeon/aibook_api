@@ -64,6 +64,17 @@ CREATE TABLE voice
     FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE
 );
 
+CREATE TABLE story_dubbing
+(
+    story_dubbing_id BIGINT   NOT NULL AUTO_INCREMENT,
+    story_id         BIGINT   NOT NULL,
+    voice_id         BIGINT   NOT NULL,
+    dubbed_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (story_dubbing_id),
+    FOREIGN KEY (story_id) REFERENCES story (story_id),
+    FOREIGN KEY (voice_id) REFERENCES voice (voice_id)
+);
+
 
 drop table story_page;
 drop table story_like;

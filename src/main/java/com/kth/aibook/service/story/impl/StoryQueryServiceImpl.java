@@ -69,6 +69,16 @@ public class StoryQueryServiceImpl implements StoryQueryService {
         return new StoryDetailResponseDto(story);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public StoryDetailResponseDto getLatestStory(Long memberId) {
+        Story latestStory = storyQueryRepository.findLatestStory(memberId);
+        if (latestStory == null) {
+            return null;
+        }
+        return new StoryDetailResponseDto(latestStory);
+    }
+
     private boolean isLiked(Long memberId, Long storyId) {
         return storyLikeRepository.existsByMemberIdAndStoryId(memberId, storyId);
     }

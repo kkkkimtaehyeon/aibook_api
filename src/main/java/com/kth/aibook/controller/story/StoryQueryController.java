@@ -63,4 +63,12 @@ public class StoryQueryController {
         Page<StorySimpleResponseDto> storyPages = storyQueryService.getMyStories(memberId, pageable);
         return ApiResponse.success(HttpStatus.OK, storyPages);
     }
+
+    // 최신
+    @GetMapping("/my/latest")
+    public ApiResponse<StoryDetailResponseDto> getMyLatestStory(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long memberId = userDetails.getMemberId();
+        StoryDetailResponseDto latestStoryDetail = storyQueryService.getLatestStory(memberId);
+        return ApiResponse.success(HttpStatus.OK, latestStoryDetail);
+    }
 }

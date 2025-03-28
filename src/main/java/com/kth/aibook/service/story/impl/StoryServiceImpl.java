@@ -88,11 +88,30 @@ public class StoryServiceImpl implements StoryService {
 
     @Transactional
     @Override
-    public void addVoicesDubbing(Long storyId, Long voiceId, Long memberId) {
+    public void requestDubbing(Long storyId, Long voiceId, Long memberId) {
         Story story = findStory(storyId);
+        dubbingService.requestVoiceDubbing(story, voiceId, memberId);
+//        Map<Long, String> storyDubbingMap = response.getStoryDubbingMap();
+//        // 오디오를 s3에 업로드하고 db 업데이트
+//        String base64Bytes;
+//        byte[] audioBytes;
+//        String dubbingAudioUrl;
+//        for (StoryPage storyPage: story.getStoryPages()) {
+//            base64Bytes = storyDubbingMap.get(storyPage.getId());
+//            if (base64Bytes == null) {
+//                throw new RuntimeException("보이스 더빙 중 오류가 발생했습니다. (더빙 누락)");
+//            }
+//            audioBytes = Base64.decode(base64Bytes);
+//            dubbingAudioUrl = cloudStorageService.uploadBytes(audioBytes, "audio/wav");
+//            storyPage.addDubbing(dubbingAudioUrl);
+//        }
+    }
 
-        VoiceDubbingResponseDto response = dubbingService.requestVoiceDubbing(story, voiceId);
-        Map<Long, String> storyDubbingMap = response.getStoryDubbingMap();
+    @Transactional // 없으면 lazy loading 에러 발생
+    @Override
+    public void saveDubbing(Long storyId, VoiceDubbingResponseDto response) {
+        Story story = findStory(storyId);
+        Map<Long , String> storyDubbingMap = response.getStoryDubbingMap();
         // 오디오를 s3에 업로드하고 db 업데이트
         String base64Bytes;
         byte[] audioBytes;
@@ -112,7 +131,6 @@ public class StoryServiceImpl implements StoryService {
     @Override
     public void patchStory(Long storyId, StoryPatchRequestDto patchRequest) {
         Story story = findStory(storyId);
-
         if (patchRequest != null && patchRequest.getTitle() != null) {
             story.updateTitle(patchRequest.getTitle());
         }
@@ -120,8 +138,7 @@ public class StoryServiceImpl implements StoryService {
 
 
     private Story findStory(Long storyId) {
-        return storyRepository.findById(storyId).orElseThrow(()
-                -> new StoryNotFoundException("존재하지 않는 동화입니다."));
+        return storyRepository.findById(storyId).orElseThrow(() -> new StoryNotFoundException("존재하지 않는 동화입니다."));
     }
 
     private int extractPageNumber(MultipartFile file) {

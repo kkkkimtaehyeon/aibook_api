@@ -2,11 +2,7 @@ package com.kth.aibook.controller.story;
 
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
-import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
-import com.kth.aibook.dto.story.StoryCompleteRequestDto;
-import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
-import com.kth.aibook.dto.story.StoryPatchRequestDto;
-import com.kth.aibook.service.cloud.CloudStorageService;
+import com.kth.aibook.dto.story.*;
 import com.kth.aibook.service.story.StoryLikeService;
 import com.kth.aibook.service.story.StoryService;
 import jakarta.validation.Valid;
@@ -83,7 +79,17 @@ public class StoryController {
                                           @PathVariable("voice-id") Long voiceId,
                                           @AuthenticationPrincipal CustomUserDetails userDetail) {
         Long memberId = userDetail.getMemberId();
-        storyService.addVoicesDubbing(storyId, voiceId, memberId);
+        storyService.requestDubbing(storyId, voiceId, memberId);
+        return ApiResponse.success(HttpStatus.ACCEPTED, null);// 202로 우선 응답
+    }
+
+    // 동화 더빙 완료 webhook
+    @PostMapping("/{story-id}/voices/{voice-id}/dubbing/completed")
+    public ApiResponse<?> completeVoiceDubbing(@PathVariable("story-id") Long storyId,
+                                               @PathVariable("voice-id") Long voiceId,
+                                               @RequestBody VoiceDubbingResponseDto dubbingResponse) {
+        storyService.saveDubbing(storyId, dubbingResponse);
+        // TODO: 사용자 알람 처리
         return ApiResponse.success(HttpStatus.OK, null);
     }
 
@@ -94,4 +100,6 @@ public class StoryController {
         storyService.patchStory(storyId, patchRequest);
         return ApiResponse.success(HttpStatus.OK, null);
     }
+
+
 }

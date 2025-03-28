@@ -1,9 +1,6 @@
 package com.kth.aibook.service.story;
 
-import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
-import com.kth.aibook.dto.story.StoryCompleteRequestDto;
-import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
-import com.kth.aibook.dto.story.StoryPatchRequestDto;
+import com.kth.aibook.dto.story.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -19,8 +16,10 @@ public interface StoryService {
 
     void addDubbings(Long storyId, List<MultipartFile> files);
 
-    void addVoicesDubbing(Long storyId, Long voiceId, Long memberId);
+    void requestDubbing(Long storyId, Long voiceId, Long memberId);
 
     void patchStory(Long storyId, StoryPatchRequestDto patchRequest);
+
+    void saveDubbing(Long storyId, VoiceDubbingResponseDto response);
 
 }

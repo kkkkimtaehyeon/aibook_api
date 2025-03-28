@@ -19,4 +19,6 @@ public interface StoryQueryService {
     Page<StorySimpleResponseDto> getMyStories(Long memberId, Pageable pageable);
 
     StoryDetailResponseDto getStory(Long storyId, CustomUserDetails userDetails);
+
+    StoryDetailResponseDto getLatestStory(Long memberId);
 }

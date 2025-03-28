@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class VoiceDto {
+    private long id;
     private String name;
 
     public VoiceDto(Voice voice) {
+        this.id = voice.getId();
         this.name = voice.getName();
     }
 }

@@ -1,8 +1,10 @@
 package com.kth.aibook.repository.story;
 
 import com.kth.aibook.dto.story.QStorySimpleResponseDto;
+import com.kth.aibook.dto.story.StoryDetailResponseDto;
 import com.kth.aibook.dto.story.StorySearchRequestDto;
 import com.kth.aibook.dto.story.StorySimpleResponseDto;
+import com.kth.aibook.entity.story.Story;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -146,6 +148,16 @@ public class StoryQueryRepository {
         long total = countResult != null ? countResult : 0;
 
         return new PageImpl<>(contentResult, pageable, total);
+    }
+
+    public Story findLatestStory(Long memberId) {
+        return queryFactory
+                .select(story)
+                .from(story)
+                .innerJoin(member).on(member.eq(story.member))
+                .where(member.id.eq(memberId))
+                .orderBy(story.createdAt.desc())
+                .fetchFirst();
     }
 
     private BooleanExpression eqIsPublic(Boolean isPublic) {

@@ -11,11 +11,13 @@ import java.util.Map;
 public class VoiceDubbingRequestDto {
     private String audioUrl;
     private Map<Long, String> storyPageMap = new HashMap<>();
+    private String webhookUrl;
 
-    public VoiceDubbingRequestDto(Story story, Voice voice) {
+    public VoiceDubbingRequestDto(Story story, Voice voice, String webhookUrl) {
         this.audioUrl = voice.getAudioUrl();
         story.getStoryPages().forEach(storyPage -> {
             storyPageMap.put(storyPage.getId(), storyPage.getContent());
         });
+        this.webhookUrl = webhookUrl;
     }
 }

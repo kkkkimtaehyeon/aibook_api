@@ -21,18 +21,24 @@ public class DubbingService {
 
     @Transactional
     // fastApi로 tts 생성 요청
-    public VoiceDubbingResponseDto requestVoiceDubbing(Story story, Long voiceId) {
+    public void requestVoiceDubbing(Story story, Long voiceId, Long memberId) {
+        //
+
         Voice voice = voiceRepository.findById(voiceId).orElseThrow(() -> new VoiceNotFoundException("등록된 목소리가 없습니다."));
-        VoiceDubbingRequestDto request = new VoiceDubbingRequestDto(story, voice);
+        String webhookUrl = getWebhookUrl(story.getId(), voiceId, memberId);
+        VoiceDubbingRequestDto request = new VoiceDubbingRequestDto(story, voice, webhookUrl);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<VoiceDubbingRequestDto> httpEntity = new HttpEntity<>(request, headers);
-        ResponseEntity<VoiceDubbingResponseDto> response = restTemplate.exchange(FASTAPI_URL, HttpMethod.POST, httpEntity, VoiceDubbingResponseDto.class);
+        ResponseEntity<?> response = restTemplate.exchange(FASTAPI_URL, HttpMethod.POST, httpEntity, Void.class);
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        }
+        if (!response.getStatusCode().is2xxSuccessful()) {
         throw new RuntimeException("더빙 생성 요청 중 오류가 발생했습니다.");
+        }
+    }
+
+    private String getWebhookUrl(Long storyId, Long voiceId, Long memberId) {
+        return String.format("http://localhost:8080/api/stories/%d/voices/%d/dubbing/completed", storyId, voiceId);
     }
 }
