@@ -3,6 +3,7 @@ package com.kth.aibook.controller.story;
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.story.StoryDetailResponseDto;
+import com.kth.aibook.dto.story.StoryDubbingResponseDto;
 import com.kth.aibook.dto.story.StorySearchRequestDto;
 import com.kth.aibook.dto.story.StorySimpleResponseDto;
 import com.kth.aibook.service.story.StoryQueryService;
@@ -73,10 +74,12 @@ public class StoryQueryController {
         return ApiResponse.success(HttpStatus.OK, latestStoryDetail);
     }
 
-//    @GetMapping("/my/dubbed-stories")
-//    public ApiResponse<?> getMyDubbedStories(@AuthenticationPrincipal CustomUserDetails userDetails,
-//            Pageable pageable) {
-//        Long memberId = userDetails.getMemberId();
-//        Page<StorySimpleResponseDto> storyPages = storyQueryService.getMyDubbedStories(memberId, pageable);
-//        return ApiResponse.success(HttpStatus.OK, storyPages);
+    // 내가 더빙한 동화 목록 조회
+    @GetMapping("/my/dubbed-stories")
+    public ApiResponse<Page<StoryDubbingResponseDto>> getMyDubbedStories(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                             Pageable pageable) {
+        Long memberId = userDetails.getMemberId();
+        Page<StoryDubbingResponseDto> storyDubbings = storyQueryService.getMyDubbedStories(memberId, pageable);
+        return ApiResponse.success(HttpStatus.OK, storyDubbings);
     }
+}

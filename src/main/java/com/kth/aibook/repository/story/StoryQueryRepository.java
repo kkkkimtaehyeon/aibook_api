@@ -1,8 +1,6 @@
 package com.kth.aibook.repository.story;
 
-import com.kth.aibook.dto.story.QStorySimpleResponseDto;
-import com.kth.aibook.dto.story.StorySearchRequestDto;
-import com.kth.aibook.dto.story.StorySimpleResponseDto;
+import com.kth.aibook.dto.story.*;
 import com.kth.aibook.entity.story.Story;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -17,7 +15,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.kth.aibook.entity.member.QMember.member;
+import static com.kth.aibook.entity.member.QVoice.voice;
 import static com.kth.aibook.entity.story.QStory.story;
+import static com.kth.aibook.entity.story.QStoryDubbing.storyDubbing;
 import static com.kth.aibook.entity.story.QStoryLike.storyLike;
 
 @RequiredArgsConstructor
@@ -123,6 +123,33 @@ public class StoryQueryRepository {
                 .where(member.id.eq(memberId))
                 .orderBy(story.createdAt.desc())
                 .fetchFirst();
+    }
+
+    public Page<StoryDubbingResponseDto> findStoryDubbings(Long memberId, Pageable pageable) {
+        List<StoryDubbingResponseDto> storyDubbingList = queryFactory
+                .select(new QStoryDubbingResponseDto(
+                                storyDubbing.id,
+                                story.title,
+                                voice.name
+                        )
+                )
+                .from(storyDubbing)
+                .innerJoin(story).on(story.eq(storyDubbing.story))
+                .innerJoin(voice).on(voice.eq(storyDubbing.voice))
+                .groupBy(storyDubbing.id)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(storyDubbing.dubbedAt.desc()) // 기본 최신순 정렬
+                .fetch();
+
+        Long countResult = queryFactory
+                .select(storyDubbing.count())
+                .from(storyDubbing)
+                .innerJoin(story).on(story.eq(storyDubbing.story))
+                .where(storyDubbing.member.id.eq(memberId))
+                .fetchOne();
+
+        return new PageImpl<>(storyDubbingList, pageable, countResult != null ? countResult : 0);
     }
 
     private BooleanExpression eqIsPublic(Boolean isPublic) {

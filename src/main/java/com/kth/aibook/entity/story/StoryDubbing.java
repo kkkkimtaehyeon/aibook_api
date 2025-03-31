@@ -35,7 +35,6 @@ public class StoryDubbing {
     @OneToMany(mappedBy = "storyDubbing", fetch = FetchType.LAZY)
     private List<StoryPageDubbing> storyPageDubbings = new ArrayList<>();
 
-
     private LocalDateTime dubbedAt;
 
     @Builder

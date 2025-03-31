@@ -2,6 +2,7 @@ package com.kth.aibook.service.story;
 
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.story.StoryDetailResponseDto;
+import com.kth.aibook.dto.story.StoryDubbingResponseDto;
 import com.kth.aibook.dto.story.StorySearchRequestDto;
 import com.kth.aibook.dto.story.StorySimpleResponseDto;
 import org.springframework.data.domain.Page;
@@ -22,5 +23,5 @@ public interface StoryQueryService {
 
     StoryDetailResponseDto getLatestStory(Long memberId);
 
-    void getMyDubbedStories(Long memberId, Pageable pageable);
+    Page<StoryDubbingResponseDto> getMyDubbedStories(Long memberId, Pageable pageable);
 }

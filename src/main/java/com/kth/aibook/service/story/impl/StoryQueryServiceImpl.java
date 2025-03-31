@@ -2,6 +2,7 @@ package com.kth.aibook.service.story.impl;
 
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.story.StoryDetailResponseDto;
+import com.kth.aibook.dto.story.StoryDubbingResponseDto;
 import com.kth.aibook.dto.story.StorySearchRequestDto;
 import com.kth.aibook.dto.story.StorySimpleResponseDto;
 import com.kth.aibook.entity.story.Story;
@@ -82,8 +83,8 @@ public class StoryQueryServiceImpl implements StoryQueryService {
 
     @Transactional(readOnly = true)
     @Override
-    public void getMyDubbedStories(Long memberId, Pageable pageable) {
-
+    public Page<StoryDubbingResponseDto> getMyDubbedStories(Long memberId, Pageable pageable) {
+        return storyQueryRepository.findStoryDubbings(memberId, pageable);
     }
 
     private boolean isLiked(Long memberId, Long storyId) {
