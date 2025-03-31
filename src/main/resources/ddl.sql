@@ -22,13 +22,14 @@ CREATE TABLE oauth_member
 
 CREATE TABLE story
 (
-    story_id   BIGINT NOT NULL AUTO_INCREMENT,
-    base_story TEXT   NOT NULL,
-    title      VARCHAR(100),
-    created_at DATETIME,
-    is_public  TINYINT(1),
-    view_count BIGINT NOT NULL DEFAULT 0,
-    member_id  BIGINT NOT NULL,
+    story_id   BIGINT       NOT NULL AUTO_INCREMENT,
+    base_story TEXT         NOT NULL,
+    title      VARCHAR(100) NOT NULL,
+    created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_public  TINYINT(1)   NOT NULL DEFAULT FALSE,
+    is_dubbed  TINYINT(1)   NOT NULL DEFAULT FALSE,
+    view_count BIGINT       NOT NULL DEFAULT 0,
+    member_id  BIGINT       NOT NULL,
     PRIMARY KEY (story_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE
 );
@@ -70,9 +71,22 @@ CREATE TABLE story_dubbing
     story_id         BIGINT   NOT NULL,
     voice_id         BIGINT   NOT NULL,
     dubbed_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    member_id       BIGINT   NOT NULL,
     PRIMARY KEY (story_dubbing_id),
     FOREIGN KEY (story_id) REFERENCES story (story_id),
-    FOREIGN KEY (voice_id) REFERENCES voice (voice_id)
+    FOREIGN KEY (voice_id) REFERENCES voice (voice_id),
+    FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE
+);
+
+drop table story_dubbing;
+CREATE TABLE story_page_dubbing(
+    story_page_dubbing_id BIGINT   NOT NULL AUTO_INCREMENT,
+    story_page_id         BIGINT   NOT NULL,
+    story_dubbing_id      BIGINT   NOT NULL,
+    dubbing_audio_url     VARCHAR(300) NOT NULL,
+    PRIMARY KEY (story_page_dubbing_id),
+    FOREIGN KEY (story_dubbing_id) REFERENCES story_dubbing (story_dubbing_id),
+    FOREIGN KEY (story_page_id) REFERENCES story_page (story_page_id)
 );
 
 

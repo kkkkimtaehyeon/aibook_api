@@ -44,13 +44,14 @@ public class StoryQueryServiceImpl implements StoryQueryService {
     @Transactional(readOnly = true)
     @Override
     public Page<StorySimpleResponseDto> getPublicStories(Pageable pageable, StorySearchRequestDto searchRequest) {
-        return storyQueryRepository.findStoryPages(pageable, searchRequest, true);
+        return storyQueryRepository.findStoryPages(pageable, searchRequest, true, null);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<StorySimpleResponseDto> getMyStories(Long memberId, Pageable pageable) {
-        return storyQueryRepository.findMyStoryPages(memberId, pageable);
+    public Page<StorySimpleResponseDto> getMyStories(Long memberId, Pageable pageable, StorySearchRequestDto searchRequest) {
+//        return storyQueryRepository.findMyStoryPages(memberId, pageable, searchRequest);
+        return storyQueryRepository.findStoryPages(pageable, searchRequest, true, memberId);
     }
 
     @Transactional
@@ -77,6 +78,12 @@ public class StoryQueryServiceImpl implements StoryQueryService {
             return null;
         }
         return new StoryDetailResponseDto(latestStory);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public void getMyDubbedStories(Long memberId, Pageable pageable) {
+
     }
 
     private boolean isLiked(Long memberId, Long storyId) {

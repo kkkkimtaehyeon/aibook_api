@@ -16,9 +16,11 @@ public interface StoryQueryService {
 
     Page<StorySimpleResponseDto> getPublicStories(Pageable pageable, StorySearchRequestDto searchRequest);
 
-    Page<StorySimpleResponseDto> getMyStories(Long memberId, Pageable pageable);
+    Page<StorySimpleResponseDto> getMyStories(Long memberId, Pageable pageable, StorySearchRequestDto searchRequest);
 
     StoryDetailResponseDto getStory(Long storyId, CustomUserDetails userDetails);
 
     StoryDetailResponseDto getLatestStory(Long memberId);
+
+    void getMyDubbedStories(Long memberId, Pageable pageable);
 }

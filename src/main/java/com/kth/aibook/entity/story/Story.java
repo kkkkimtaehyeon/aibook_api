@@ -34,6 +34,10 @@ public class Story {
     @Column(columnDefinition = "TINYINT", nullable = true)
     private boolean isPublic;
 
+    @ColumnDefault(value = "false")
+    @Column(columnDefinition = "TINYINT", nullable = true)
+    private boolean isDubbed;
+
     @ColumnDefault(value = "0")
     @Column(columnDefinition = "BIGINT", nullable = false)
     private Long viewCount = 0L;
@@ -46,12 +50,13 @@ public class Story {
     private List<StoryPage> storyPages = new ArrayList<>();
 
     @Builder
-    public Story(Long id, String baseStory, String title, LocalDateTime createdAt, boolean isPublic, Member member) {
+    public Story(Long id, String baseStory, String title, LocalDateTime createdAt, boolean isPublic, boolean isDubbed, Member member) {
         this.id = id;
         this.baseStory = baseStory;
         this.title = title;
         this.createdAt = createdAt;
         this.isPublic = isPublic;
+        this.isDubbed = isDubbed;
         this.member = member;
     }
 
@@ -64,6 +69,10 @@ public class Story {
         this.title = completeRequest.title();
         this.isPublic = completeRequest.isPublic();
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void completeDubbing() {
+        this.isDubbed = true;
     }
 
     public void increaseViewCount(int increaseViewCount) {

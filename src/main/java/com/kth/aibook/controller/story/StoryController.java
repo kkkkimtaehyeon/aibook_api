@@ -2,7 +2,9 @@ package com.kth.aibook.controller.story;
 
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
+import com.kth.aibook.common.exception.StoryDubbingException;
 import com.kth.aibook.dto.story.*;
+import com.kth.aibook.service.story.StoryDubbingService;
 import com.kth.aibook.service.story.StoryLikeService;
 import com.kth.aibook.service.story.StoryService;
 import jakarta.validation.Valid;
@@ -20,7 +22,6 @@ import java.util.List;
 public class StoryController {
     private final StoryService storyService;
     private final StoryLikeService storyLikeService;
-
     // 동화 기초이야기 저장
     @PostMapping("/base-story")
     public ApiResponse<Long> createBaseStory(@AuthenticationPrincipal CustomUserDetails user,
@@ -65,34 +66,6 @@ public class StoryController {
         return ApiResponse.success(HttpStatus.NO_CONTENT, null);
     }
 
-    // 동화 더빙 업로드
-    @PostMapping("/{story-id}/dubbing")
-    public ApiResponse<Void> addDubbing(@PathVariable("story-id") Long storyId,
-                                        @RequestParam("files") List<MultipartFile> files) {
-        storyService.addDubbings(storyId, files);
-        return ApiResponse.success(HttpStatus.OK, null);
-    }
-
-    // 보이스 클로닝 더빙
-    @PostMapping("/{story-id}/voices/{voice-id}/dubbing")
-    public ApiResponse<?> addVoiceDubbing(@PathVariable("story-id") Long storyId,
-                                          @PathVariable("voice-id") Long voiceId,
-                                          @AuthenticationPrincipal CustomUserDetails userDetail) {
-        Long memberId = userDetail.getMemberId();
-        storyService.requestDubbing(storyId, voiceId, memberId);
-        return ApiResponse.success(HttpStatus.ACCEPTED, null);// 202로 우선 응답
-    }
-
-    // 동화 더빙 완료 webhook
-    @PostMapping("/{story-id}/voices/{voice-id}/dubbing/completed")
-    public ApiResponse<?> completeVoiceDubbing(@PathVariable("story-id") Long storyId,
-                                               @PathVariable("voice-id") Long voiceId,
-                                               @RequestBody VoiceDubbingResponseDto dubbingResponse) {
-        storyService.saveDubbing(storyId, dubbingResponse);
-        // TODO: 사용자 알람 처리
-        return ApiResponse.success(HttpStatus.OK, null);
-    }
-
     // 동화 수정
     @PatchMapping("/{story-id}")
     public ApiResponse<?> patchStory(@PathVariable("story-id") Long storyId,
@@ -100,6 +73,4 @@ public class StoryController {
         storyService.patchStory(storyId, patchRequest);
         return ApiResponse.success(HttpStatus.OK, null);
     }
-
-
 }

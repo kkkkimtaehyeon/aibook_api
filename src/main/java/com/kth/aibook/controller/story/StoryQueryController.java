@@ -58,9 +58,10 @@ public class StoryQueryController {
 
     @GetMapping("/my")
     public ApiResponse<Page<StorySimpleResponseDto>> getMyStories(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                  Pageable pageable) {
+                                                                  Pageable pageable,
+                                                                  StorySearchRequestDto searchRequest) {
         Long memberId = userDetails.getMemberId();
-        Page<StorySimpleResponseDto> storyPages = storyQueryService.getMyStories(memberId, pageable);
+        Page<StorySimpleResponseDto> storyPages = storyQueryService.getMyStories(memberId, pageable, searchRequest);
         return ApiResponse.success(HttpStatus.OK, storyPages);
     }
 
@@ -71,4 +72,11 @@ public class StoryQueryController {
         StoryDetailResponseDto latestStoryDetail = storyQueryService.getLatestStory(memberId);
         return ApiResponse.success(HttpStatus.OK, latestStoryDetail);
     }
-}
+
+//    @GetMapping("/my/dubbed-stories")
+//    public ApiResponse<?> getMyDubbedStories(@AuthenticationPrincipal CustomUserDetails userDetails,
+//            Pageable pageable) {
+//        Long memberId = userDetails.getMemberId();
+//        Page<StorySimpleResponseDto> storyPages = storyQueryService.getMyDubbedStories(memberId, pageable);
+//        return ApiResponse.success(HttpStatus.OK, storyPages);
+    }
