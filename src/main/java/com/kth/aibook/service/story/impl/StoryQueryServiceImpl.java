@@ -1,12 +1,11 @@
 package com.kth.aibook.service.story.impl;
 
 import com.kth.aibook.common.CustomUserDetails;
-import com.kth.aibook.dto.story.StoryDetailResponseDto;
-import com.kth.aibook.dto.story.StoryDubbingResponseDto;
-import com.kth.aibook.dto.story.StorySearchRequestDto;
-import com.kth.aibook.dto.story.StorySimpleResponseDto;
+import com.kth.aibook.dto.story.*;
 import com.kth.aibook.entity.story.Story;
+import com.kth.aibook.entity.story.StoryDubbing;
 import com.kth.aibook.exception.story.StoryNotFoundException;
+import com.kth.aibook.repository.story.StoryDubbingRepository;
 import com.kth.aibook.repository.story.StoryLikeRepository;
 import com.kth.aibook.repository.story.StoryQueryRepository;
 import com.kth.aibook.repository.story.StoryRepository;
@@ -26,6 +25,7 @@ public class StoryQueryServiceImpl implements StoryQueryService {
     private final StoryQueryRepository storyQueryRepository;
     private final StoryRepository storyRepository;
     private final StoryLikeRepository storyLikeRepository;
+    private final StoryDubbingRepository storyDubbingRepository;
 
     private static final int MOST_VIEWED_STORY_SIZE = 4;
     private static final int MOST_LIKED_STORY_SIZE = 4;
@@ -85,6 +85,13 @@ public class StoryQueryServiceImpl implements StoryQueryService {
     @Override
     public Page<StoryDubbingResponseDto> getMyDubbedStories(Long memberId, Pageable pageable) {
         return storyQueryRepository.findStoryDubbings(memberId, pageable);
+    }
+
+    @Transactional(readOnly = true) // 없으면 LazyInitializationException 발생
+    @Override
+    public StoryDubbingDetailResponseDto getStoryDubbing(Long storyDubbingId) {
+        StoryDubbing storyDubbing = storyDubbingRepository.findById(storyDubbingId).orElseThrow(() -> new RuntimeException("찾을 수 없는 더빙 동화입니다."));
+        return new StoryDubbingDetailResponseDto(storyDubbing);
     }
 
     private boolean isLiked(Long memberId, Long storyId) {
