@@ -1,11 +1,14 @@
 package com.kth.aibook.common.provider;
 
 import com.kth.aibook.common.CustomUserDetails;
+import com.kth.aibook.dto.auth.TokenRequestDto;
 import com.kth.aibook.dto.member.MemberDetailDto;
+import com.kth.aibook.entity.member.MemberRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +29,7 @@ public class JwtProvider {
     @Value("${jwt.access-duration}")
     private long accessDuration;
 
+    @Getter
     @Value("${jwt.refresh-duration}")
     private long refreshDuration;
 
@@ -35,8 +39,12 @@ public class JwtProvider {
         this.key = Keys.hmacShaKeyFor(byteSecretKey);
     }
 
-    public String generateAccessToken(MemberDetailDto memberDetailDto) {
-        return generateJwt(memberDetailDto, accessDuration);
+    public String generateAccessToken(TokenRequestDto tokenRequestDto) {
+        return generateJwt(tokenRequestDto, accessDuration);
+    }
+
+    public String generateRefreshToken(TokenRequestDto tokenRequestDto) {
+        return generateJwt(tokenRequestDto, refreshDuration);
     }
 
     public void validateToken(String token) {
@@ -64,9 +72,11 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
     }
 
-    public long getMemberIdFromToken(String token) {
+    public TokenRequestDto extractTokenRequestFromToken(String token) {
         Claims claims = parseToken(token);
-        return Long.parseLong(claims.getSubject());
+        Long memberId = Long.valueOf(claims.getSubject());
+        MemberRole role = MemberRole.valueOf((String) claims.get("role"));
+        return new TokenRequestDto(memberId, role);
     }
 
     private Long getMemberId(String token) {
@@ -80,11 +90,11 @@ public class JwtProvider {
         return List.of(new SimpleGrantedAuthority(role));
     }
 
-    private String generateJwt(MemberDetailDto memberDetailDto, long duration) {
+    private String generateJwt(TokenRequestDto tokenRequestDto, long duration) {
         long currentMillis = System.currentTimeMillis();
         return Jwts.builder()
-                .setSubject(String.valueOf(memberDetailDto.getMemberId()))
-                .claim("role", memberDetailDto.getRole())
+                .setSubject(String.valueOf(tokenRequestDto.memberId()))
+                .claim("role", tokenRequestDto.role())
                 .setIssuedAt(new Date(currentMillis))
                 .setExpiration(new Date(currentMillis + duration))
                 .signWith(key, SignatureAlgorithm.HS256)

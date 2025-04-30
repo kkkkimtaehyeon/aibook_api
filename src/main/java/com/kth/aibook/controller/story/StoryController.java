@@ -22,32 +22,14 @@ import java.util.List;
 public class StoryController {
     private final StoryService storyService;
     private final StoryLikeService storyLikeService;
-    // 동화 기초이야기 저장
-    @PostMapping("/base-story")
-    public ApiResponse<Long> createBaseStory(@AuthenticationPrincipal CustomUserDetails user,
-                                             @Valid @RequestBody BaseStoryCreateRequestDto createRequest) {
+
+    // 동화 생성
+    @PostMapping
+    public ApiResponse<Long> createStory(@AuthenticationPrincipal CustomUserDetails user,
+                                         @Valid @RequestBody StoryCreateRequestDto request) {
         Long memberId = user.getMemberId();
-        Long savedStoryId = storyService.createBaseStory(memberId, createRequest);
-
-        return ApiResponse.success(HttpStatus.CREATED, savedStoryId);
-    }
-
-    // 동화 페이지 저장
-    @PostMapping("/{story-id}/pages/{page-number}")
-    public ApiResponse<Long> createStoryPage(@PathVariable("story-id") Long storyId,
-                                             @PathVariable("page-number") Integer pageNumber,
-                                             @RequestBody StoryPageCreateRequestDto createRequest) {
-        createRequest.setPageNumber(pageNumber);
-        Long savedStoryPageId = storyService.createStoryPage(storyId, createRequest);
-        return ApiResponse.success(HttpStatus.CREATED, savedStoryPageId);
-    }
-
-    // 동화 완성
-    @PatchMapping("/{story-id}/complete")
-    public ApiResponse<Long> completeStory(@PathVariable("story-id") Long storyId,
-                                           @RequestBody StoryCompleteRequestDto completeRequest) {
-        Long completedStoryId = storyService.completeStory(storyId, completeRequest);
-        return ApiResponse.success(HttpStatus.CREATED, completedStoryId);
+        Long createdStoryId = storyService.createStory(memberId, request);
+        return ApiResponse.success(HttpStatus.CREATED, createdStoryId);
     }
 
     // 동화 좋아요

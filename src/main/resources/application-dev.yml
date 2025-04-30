@@ -18,5 +18,6 @@ spring:
   config:
     import: classpath:application-secret.yml
 
+
 server:
   port: 8080

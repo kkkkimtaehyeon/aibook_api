@@ -51,8 +51,7 @@ public class StoryQueryServiceImpl implements StoryQueryService {
     @Transactional(readOnly = true)
     @Override
     public Page<StorySimpleResponseDto> getMyStories(Long memberId, Pageable pageable, StorySearchRequestDto searchRequest) {
-//        return storyQueryRepository.findMyStoryPages(memberId, pageable, searchRequest);
-        return storyQueryRepository.findStoryPages(pageable, searchRequest, true, memberId);
+        return storyQueryRepository.findStoryPages(pageable, searchRequest, null, memberId);
     }
 
     @Transactional
@@ -65,11 +64,13 @@ public class StoryQueryServiceImpl implements StoryQueryService {
 
         if (userDetails != null) {
             Long memberId = userDetails.getMemberId();
-            boolean isLiked = isLiked(memberId, storyId);
-            return new StoryDetailResponseDto(story, isLiked);
+            boolean isMemberLiked = isMemberLiked(memberId, storyId);
+            return new StoryDetailResponseDto(story, isMemberLiked);
         }
         return new StoryDetailResponseDto(story);
     }
+
+
 
     @Transactional(readOnly = true)
     @Override
@@ -94,7 +95,7 @@ public class StoryQueryServiceImpl implements StoryQueryService {
         return new StoryDubbingDetailResponseDto(storyDubbing);
     }
 
-    private boolean isLiked(Long memberId, Long storyId) {
+    private boolean isMemberLiked(Long memberId, Long storyId) {
         return storyLikeRepository.existsByMemberIdAndStoryId(memberId, storyId);
     }
 }

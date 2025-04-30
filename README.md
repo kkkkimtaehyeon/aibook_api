@@ -40,8 +40,8 @@
 
 ## Authentication
 - [x] AccessToken 발급
-- [ ] RefreshToken 발급
-- [ ] RefreshToken을 기반으로 AccessToken을 재발급
+- [x] RefreshToken 발급
+- [x] RefreshToken을 기반으로 AccessToken을 재발급
 - [x] JWT Filter
 
 
@@ -58,7 +58,6 @@
 - 마이페이지/동화 목록 화면 비율 수정
 - 새로고침 시 로그아웃처리 되는 현상 수정
 - 페이지별 접근 제한 설정
-- 목소리 삭제
 - GPT 동화 내용 생성 퀄리티 개선 
 
 25.03.28
@@ -68,3 +67,18 @@
 - 더빙 완료 시 알림
 - storyDubbing, storyDubbingPage 엔티티 추가 (더빙하면 기존 동화를 복제하는 개념)
 
+25.04.22
+- 동화 생성 로직 수정
+- 동화 생성 퀄리티 향상
+  - story context 추출
+  - 생성 요청 시 story context와 story history로 맥락 유지
+  - story arc(발단, 전개..) 추가
+  - 프롬프트 수정
+- access token 재발급 구현, refresh token은 쿠키, redis에 저장
+- 목소리 목록에서 목소리(or 보이스 클로닝된 샘플) 재생
+- 회원탈퇴
+- 입력 도우미 구현
+
+25.04.29
+- 토큰 만료 시 로그아웃 안되는 오류 해결
+- 목소리 삭제

@@ -153,7 +153,10 @@ public class StoryQueryRepository {
     }
 
     private BooleanExpression eqIsPublic(Boolean isPublic) {
-        if (isPublic == null || isPublic) {
+        if (isPublic == null) {
+            return null;
+        }
+        if (isPublic) {
             return story.isPublic.eq(true);
         }
         return story.isPublic.eq(false);

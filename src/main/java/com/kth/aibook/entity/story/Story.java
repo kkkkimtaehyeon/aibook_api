@@ -24,18 +24,18 @@ public class Story {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String baseStory;
 
-    @Column(length = 100, nullable = true)
+    @Column(length = 100, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "DATETIME", nullable = true)
+    @Column(columnDefinition = "DATETIME", nullable = false)
     private LocalDateTime createdAt;
 
     @ColumnDefault(value = "false")
-    @Column(columnDefinition = "TINYINT", nullable = true)
+    @Column(columnDefinition = "TINYINT", nullable = false)
     private boolean isPublic;
 
     @ColumnDefault(value = "false")
-    @Column(columnDefinition = "TINYINT", nullable = true)
+    @Column(columnDefinition = "TINYINT", nullable = false)
     private boolean isDubbed;
 
     @ColumnDefault(value = "0")
@@ -46,7 +46,7 @@ public class Story {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToMany(mappedBy = "story", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "story", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<StoryPage> storyPages = new ArrayList<>();
 
     @Builder

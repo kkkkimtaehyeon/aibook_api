@@ -2,6 +2,7 @@ package com.kth.aibook.dto.story;
 
 import com.kth.aibook.entity.story.Story;
 import com.kth.aibook.entity.story.StoryPage;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ public class StoryDetailResponseDto {
     private Long memberId;
     private String author;
     private Long viewCount;
+//    private Long likeCount;
     private List<StoryPageDto> pages;
     private boolean isLiked = false;
 
@@ -34,6 +36,7 @@ public class StoryDetailResponseDto {
         this.author = story.getMember().getNickName();
         this.viewCount = story.getViewCount();
         this.pages = story.getStoryPages().stream().map(StoryPageDto::new).toList();
+
         this.isLiked = isLiked;
     }
 }

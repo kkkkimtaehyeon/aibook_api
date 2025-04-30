@@ -6,7 +6,7 @@ CREATE TABLE `member`
     `birth_date`    DATE         NOT NULL,
     `created_at`    DATETIME     NOT NULL,
     `role`          VARCHAR(20)  NOT NULL,
-    oauth_member_id BIGINT       NULL,
+    oauth_member_id BIGINT NULL,
     primary key (member_id),
     FOREIGN KEY (oauth_member_id) references oauth_member (oauth_member_id)
 );
@@ -57,10 +57,11 @@ CREATE TABLE story_like
 
 CREATE TABLE voice
 (
-    voice_id  BIGINT       NOT NULL AUTO_INCREMENT,
-    name      VARCHAR(20)  NOT NULL,
-    audio_url VARCHAR(500) NOT NULL,
-    member_id BIGINT       NOT NULL,
+    voice_id   BIGINT       NOT NULL AUTO_INCREMENT,
+    name       VARCHAR(20)  NOT NULL,
+    audio_url  VARCHAR(500) NOT NULL,
+    member_id  BIGINT       NOT NULL,
+    deleted_at TIMESTAMP,
     PRIMARY KEY (voice_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE
 );
@@ -71,7 +72,7 @@ CREATE TABLE story_dubbing
     story_id         BIGINT   NOT NULL,
     voice_id         BIGINT   NOT NULL,
     dubbed_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    member_id       BIGINT   NOT NULL,
+    member_id        BIGINT   NOT NULL,
     PRIMARY KEY (story_dubbing_id),
     FOREIGN KEY (story_id) REFERENCES story (story_id),
     FOREIGN KEY (voice_id) REFERENCES voice (voice_id),
@@ -79,10 +80,11 @@ CREATE TABLE story_dubbing
 );
 
 drop table story_dubbing;
-CREATE TABLE story_page_dubbing(
-    story_page_dubbing_id BIGINT   NOT NULL AUTO_INCREMENT,
-    story_page_id         BIGINT   NOT NULL,
-    story_dubbing_id      BIGINT   NOT NULL,
+CREATE TABLE story_page_dubbing
+(
+    story_page_dubbing_id BIGINT       NOT NULL AUTO_INCREMENT,
+    story_page_id         BIGINT       NOT NULL,
+    story_dubbing_id      BIGINT       NOT NULL,
     dubbing_audio_url     VARCHAR(300) NOT NULL,
     PRIMARY KEY (story_page_dubbing_id),
     FOREIGN KEY (story_dubbing_id) REFERENCES story_dubbing (story_dubbing_id),

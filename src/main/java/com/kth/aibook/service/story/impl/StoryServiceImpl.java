@@ -1,9 +1,6 @@
 package com.kth.aibook.service.story.impl;
 
-import com.kth.aibook.dto.story.BaseStoryCreateRequestDto;
-import com.kth.aibook.dto.story.StoryCompleteRequestDto;
-import com.kth.aibook.dto.story.StoryPageCreateRequestDto;
-import com.kth.aibook.dto.story.StoryPatchRequestDto;
+import com.kth.aibook.dto.story.*;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.story.Story;
 import com.kth.aibook.entity.story.StoryPage;
@@ -17,47 +14,36 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Service
 public class StoryServiceImpl implements StoryService {
     private final StoryRepository storyRepository;
-    private final StoryPageRepository storyPageRepository;
     private final MemberRepository memberRepository;
 
-    // 동화 기초이야기 저장
+    @Transactional
     @Override
-    public Long createBaseStory(long memberId, BaseStoryCreateRequestDto createRequest) {
-        Member member = memberRepository.findById(memberId).orElseThrow(()
-                -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-        Story tempStory = Story.builder()
-                .baseStory(createRequest.baseStory())
+    public Long createStory(Long memberId, StoryCreateRequestDto request) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다. memberId: " + memberId));
+        Story story = Story.builder()
+                .baseStory(request.baseStory())
+                .createdAt(LocalDateTime.now())
                 .member(member)
+                .title(request.title())
+                .isPublic(false)
+                .isDubbed(false)
                 .build();
-        Story savedStory = storyRepository.save(tempStory);
-
+        String[] sentences = request.selectedSentences();
+        for (int pageNumber = 0; pageNumber < sentences.length; pageNumber++) {
+            StoryPage page = StoryPage.builder()
+                    .pageNumber(pageNumber)
+                    .content(sentences[pageNumber])
+                    .build();
+            story.addStoryPage(page);
+        }
+        Story savedStory = storyRepository.save(story);
         return savedStory.getId();
-    }
-
-    // 동화 페이지 저장
-    @Transactional
-    @Override
-    public Long createStoryPage(Long storyId, StoryPageCreateRequestDto createRequest) {
-        Story story = findStory(storyId);
-        StoryPage storyPage = createRequest.toEntity();
-        story.addStoryPage(storyPage);
-        StoryPage savedStoryPage = storyPageRepository.save(storyPage);
-
-        return savedStoryPage.getId();
-    }
-
-    // 동화 완성
-    @Transactional
-    @Override
-    public Long completeStory(Long storyId, StoryCompleteRequestDto completeRequest) {
-        Story story = findStory(storyId);
-        story.completeStory(completeRequest);
-
-        return story.getId();
     }
 
     // 동화 삭제
@@ -79,6 +65,8 @@ public class StoryServiceImpl implements StoryService {
             story.updateTitle(patchRequest.getTitle());
         }
     }
+
+
 
     private Story findStory(Long storyId) {
         return storyRepository.findById(storyId).orElseThrow(() -> new StoryNotFoundException("존재하지 않는 동화입니다. storyId: " + storyId));

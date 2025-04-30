@@ -24,4 +24,13 @@ public class MemberDetailDto {
         this.createdAt = entity.getCreatedAt();
         this.role = entity.getRole();
     }
+
+    public MemberDetailDto(Long memberId, String email, String nickName, LocalDate birthDate, LocalDateTime createdAt, MemberRole role) {
+        this.memberId = memberId;
+        this.email = email;
+        this.nickName = nickName;
+        this.birthDate = birthDate;
+        this.createdAt = createdAt;
+        this.role = role;
+    }
 }

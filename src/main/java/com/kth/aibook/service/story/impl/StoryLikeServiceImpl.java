@@ -11,6 +11,7 @@ import com.kth.aibook.repository.story.StoryRepository;
 import com.kth.aibook.service.story.StoryLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -19,6 +20,7 @@ public class StoryLikeServiceImpl implements StoryLikeService {
     private final MemberRepository memberRepository;
     private final StoryLikeRepository storyLikeRepository;
 
+    @Transactional
     @Override
     public void likeStory(Long memberId, Long storyId) {
         Member member = memberRepository
@@ -30,7 +32,7 @@ public class StoryLikeServiceImpl implements StoryLikeService {
 
         // 이미 좋아요 눌렀으면 취소
         if (isAlreadyLiked(memberId, storyId)) {
-            storyLikeRepository.deleteByMemberIdAndStoryId(memberId, storyId);
+            int affected = storyLikeRepository.deleteByMemberIdAndStoryId(memberId, storyId);
             return;
         }
         storyLikeRepository.save(new StoryLike(member, story));
