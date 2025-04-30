@@ -19,4 +19,6 @@ public interface MemberService {
 
     List<VoiceDto> getVoices(Long memberId);
 
+    void removeVoices(Long voiceId);
+
 }

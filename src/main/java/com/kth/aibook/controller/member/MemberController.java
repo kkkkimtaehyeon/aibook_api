@@ -66,6 +66,20 @@ public class MemberController {
         return ApiResponse.success(HttpStatus.OK, voices);
     }
 
+    /**
+     * 목소리 삭제
+     *
+     * @param userDetail
+     * @param voiceId
+     * @return
+     */
+    @DeleteMapping("/api/voices/{voice-id}")
+    public ApiResponse<List<VoiceDto>> deleteMemberVoices(@AuthenticationPrincipal CustomUserDetails userDetail,
+                                                          @PathVariable("voice-id") Long voiceId) {
+        memberService.removeVoices(voiceId);
+        return ApiResponse.success(HttpStatus.NO_CONTENT);
+    }
+
 
     private Long getMemberIdFromUserDetail(CustomUserDetails userDetail) {
         if (userDetail == null) {

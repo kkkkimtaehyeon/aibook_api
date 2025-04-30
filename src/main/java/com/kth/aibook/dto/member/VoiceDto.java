@@ -14,4 +14,9 @@ public class VoiceDto {
         this.id = voice.getId();
         this.name = voice.getName();
     }
+
+    public VoiceDto(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

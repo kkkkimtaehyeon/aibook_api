@@ -1,5 +1,6 @@
 package com.kth.aibook.service.member.impl;
 
+import com.kth.aibook.common.exception.VoiceNotFoundException;
 import com.kth.aibook.dto.member.*;
 import com.kth.aibook.entity.member.Member;
 import com.kth.aibook.entity.member.OauthMember;
@@ -91,8 +92,26 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<VoiceDto> getVoices(Long memberId) {
-        Member member = findMember(memberId);
-        return voiceRepository.findByMember(member);
+//        Member member = findMember(memberId);
+        return voiceRepository.findByMemberId(memberId);
+    }
+
+//    변경 전
+//    @Override
+//    public void removeVoices(Long voiceId) {
+//        boolean isVoiceExists = voiceRepository.existsById(voiceId);
+//        if (!isVoiceExists) {
+//            throw new VoiceNotFoundException("voice(id: " + voiceId + ") is not found!");
+//        }
+//            voiceRepository.deleteById(voiceId);
+//    }
+
+    @Transactional
+    @Override
+    public void removeVoices(Long voiceId) {
+        Voice voice =  voiceRepository.findById(voiceId).orElseThrow(() -> new VoiceNotFoundException("voice(id: " + voiceId + ") is not found!"));
+        // s3 오디오는 삭제?
+        voice.logicallyDeleteVoice();
     }
 
     private OauthMember saveOauthMember(String oauthProvider, long oauthProviderMemberId) {
