@@ -136,10 +136,12 @@ public class StoryQueryRepository {
                 .from(storyDubbing)
                 .innerJoin(story).on(story.eq(storyDubbing.story))
                 .innerJoin(voice).on(voice.eq(storyDubbing.voice))
+                .innerJoin(member).on(member.eq(storyDubbing.member))
                 .groupBy(storyDubbing.id)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(storyDubbing.dubbedAt.desc()) // 기본 최신순 정렬
+                .where(member.id.eq(memberId))
                 .fetch();
 
         Long countResult = queryFactory

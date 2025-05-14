@@ -58,7 +58,7 @@ class StoryDubbingServiceImplTest {
     }
 
     @Test
-    void saveDubbing_success() throws StoryDubbingException {
+    void saveDubbing_V1_success() throws StoryDubbingException {
         Long storyId = 1L;
         Long memberId = 2L;
         Long voiceId = 3L;
