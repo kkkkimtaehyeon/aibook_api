@@ -92,7 +92,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<VoiceDto> getVoices(Long memberId) {
-//        Member member = findMember(memberId);
         return voiceRepository.findByMemberId(memberId);
     }
 

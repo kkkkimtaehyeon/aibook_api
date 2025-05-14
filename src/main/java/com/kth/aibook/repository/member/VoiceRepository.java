@@ -15,7 +15,7 @@ public interface VoiceRepository extends JpaRepository<Voice, Long> {
     @Query("SELECT new com.kth.aibook.dto.member.VoiceDto(v.id, v.name) " +
             "FROM Voice v " +
             "INNER JOIN Member m ON v.member.id = m.id " +
-            "WHERE v.deletedAt IS NULL ")
+            "WHERE m.id = :memberId AND v.deletedAt IS NULL ")
     List<VoiceDto> findByMemberId(@Param("memberId") Long memberId);
 
 
