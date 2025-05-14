@@ -19,7 +19,7 @@ public class MemberCreateRequestDto {
     private String email;
 
     @NotBlank(message = "닉네임은 필수값입니다.")
-    @Length(min = 5, max = 15)
+    @Length(min = 2, max = 12)
     private String nickName;
 
     @NotNull
