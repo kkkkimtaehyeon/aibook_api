@@ -1,6 +1,8 @@
 package com.kth.aibook.repository.story;
 
 import com.kth.aibook.dto.story.*;
+import com.kth.aibook.dto.story.tag.QTagDto;
+import com.kth.aibook.dto.story.tag.TagDto;
 import com.kth.aibook.entity.story.Story;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -19,6 +21,8 @@ import static com.kth.aibook.entity.member.QVoice.voice;
 import static com.kth.aibook.entity.story.QStory.story;
 import static com.kth.aibook.entity.story.QStoryDubbing.storyDubbing;
 import static com.kth.aibook.entity.story.QStoryLike.storyLike;
+import static com.kth.aibook.entity.story.QStoryTag.storyTag;
+import static com.kth.aibook.entity.story.QTag.tag;
 
 @RequiredArgsConstructor
 @Repository
@@ -74,7 +78,8 @@ public class StoryQueryRepository {
     }
 
     public Page<StorySimpleResponseDto> findStoryPages(Pageable pageable, StorySearchRequestDto searchRequest, Boolean isPublic, Long memberId) {
-        List<StorySimpleResponseDto> contentResult = queryFactory
+
+        List<StorySimpleResponseDto> storyDtoList = queryFactory
                 .select(new QStorySimpleResponseDto(
                         story.id,
                         story.title,
@@ -102,6 +107,22 @@ public class StoryQueryRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        // 태그 추가
+        for (StorySimpleResponseDto storyDto : storyDtoList) {
+            List<TagDto> tagList = queryFactory
+                    .select(new QTagDto(
+                            tag.id,
+                            tag.name
+                    ))
+                    .from(storyTag)
+                    .innerJoin(tag).on(tag.eq(storyTag.tag))
+                    .where(storyTag.story.id.in(storyDto.getStoryId()))
+                    .fetch();
+            if (!tagList.isEmpty()) {
+                storyDto.setTagList(tagList);
+            }
+        }
+
         Long countResult = queryFactory
                 .select(story.count())
                 .from(story)
@@ -112,7 +133,7 @@ public class StoryQueryRepository {
                 .fetchOne();
         long total = countResult != null ? countResult : 0;
 
-        return new PageImpl<>(contentResult, pageable, total);
+        return new PageImpl<>(storyDtoList, pageable, total);
     }
 
     public Story findLatestStory(Long memberId) {
