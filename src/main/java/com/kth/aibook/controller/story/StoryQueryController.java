@@ -2,6 +2,7 @@ package com.kth.aibook.controller.story;
 
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
+import com.kth.aibook.dto.common.ApiResponseBody;
 import com.kth.aibook.dto.story.*;
 import com.kth.aibook.service.story.StoryQueryService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,13 +47,20 @@ public class StoryQueryController {
         return ApiResponse.success(HttpStatus.OK, storyPages);
     }
 
-    // 동화 상세조회
+
+    /**
+     * 동호 상세 조회
+     *
+     * @param storyId
+     * @param userDetails
+     * @return
+     */
     @GetMapping("/{story-id}")
-    public ApiResponse<StoryDetailResponseDto> getStory(@PathVariable("story-id") Long storyId,
-                                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponseBody> getStory(@PathVariable("story-id") Long storyId,
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
         // 로그인한 회원이면 좋아요 정보도 같이 가져옴
         StoryDetailResponseDto storyDetail = storyQueryService.getStory(storyId, userDetails);
-        return ApiResponse.success(HttpStatus.OK, storyDetail);
+        return ResponseEntity.ok(new ApiResponseBody(null, storyDetail));
     }
 
     @GetMapping("/my")
@@ -76,8 +85,8 @@ public class StoryQueryController {
     public ApiResponse<Page<StoryDubbingResponseDto>> getMyDubbedStories(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                          Pageable pageable) {
         Long memberId = userDetails.getMemberId();
-        Page<StoryDubbingResponseDto> storyDubbings = storyQueryService.getMyDubbedStories(memberId, pageable);
-        return ApiResponse.success(HttpStatus.OK, storyDubbings);
+        Page<StoryDubbingResponseDto> storyDubbingList = storyQueryService.getMyDubbedStories(memberId, pageable);
+        return ApiResponse.success(HttpStatus.OK, storyDubbingList);
     }
 
     @GetMapping("/dubbed-stories/{dubbed-story-id}")

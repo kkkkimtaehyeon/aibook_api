@@ -4,6 +4,7 @@ import com.kth.aibook.dto.story.*;
 import com.kth.aibook.dto.story.tag.QTagDto;
 import com.kth.aibook.dto.story.tag.TagDto;
 import com.kth.aibook.entity.story.Story;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.kth.aibook.entity.member.QMember.member;
 import static com.kth.aibook.entity.member.QVoice.voice;
@@ -76,9 +79,94 @@ public class StoryQueryRepository {
                 .limit(size)
                 .fetch();
     }
+    // NOTE: 원래 메서드(v1) hibernate: 23
+//    public Page<StorySimpleResponseDto> findStoryPages(Pageable pageable, StorySearchRequestDto searchRequest, Boolean isPublic, Long memberId) {
+//
+//        List<StorySimpleResponseDto> storyDtoList = queryFactory
+//                .select(new QStorySimpleResponseDto(
+//                        story.id,
+//                        story.title,
+//                        member.id,
+//                        member.nickName,
+//                        story.viewCount,
+//                        storyLike.count()
+//                ))
+//                .from(story)
+//                .innerJoin(story.member, member)
+//                .leftJoin(storyLike).on(storyLike.story.eq(story))
+//                .leftJoin(storyTag).on(storyTag.story.eq(story))
+//                .leftJoin(tag).on(tag.eq(storyTag.tag))
+//                .where(
+//                        eqIsPublic(isPublic),
+//                        likeSearchKeyword(searchRequest),
+//                        eqMemberId(memberId),
+//                        eqTagId(searchRequest.tagId())
+//                )
+//                .groupBy(story.id,
+//                        story.title,
+//                        member.id,
+//                        member.nickName,
+//                        story.viewCount)
+//                .orderBy(getDynamicOrder(searchRequest))
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//        // 태그 추가
+//        for (StorySimpleResponseDto storyDto : storyDtoList) {
+//            List<TagDto> tagList = queryFactory
+//                    .select(new QTagDto(
+//                            tag.id,
+//                            tag.name
+//                    ))
+//                    .from(storyTag)
+//                    .innerJoin(tag).on(tag.eq(storyTag.tag))
+//                    .where(storyTag.story.id.in(storyDto.getStoryId()))
+//                    .fetch();
+//            if (!tagList.isEmpty()) {
+//                storyDto.setTagList(tagList);
+//            }
+//        }
+//
+//        Long countResult = queryFactory
+//                .select(story.count())
+//                .from(story)
+//                .where(
+//                        eqIsPublic(isPublic),
+//                        likeSearchKeyword(searchRequest)
+//                )
+//                .fetchOne();
+//        long total = countResult != null ? countResult : 0;
+//
+//        return new PageImpl<>(storyDtoList, pageable, total);
+//    }
 
+    // NOTE: ID목록 먼저 조회하고 태그 목록 한방 조회 (v2) hibernate: 5
     public Page<StorySimpleResponseDto> findStoryPages(Pageable pageable, StorySearchRequestDto searchRequest, Boolean isPublic, Long memberId) {
+        // 스토리 ID 목록을 먼저 조회
 
+        List<Long> storyIds = queryFactory
+                .select(story.id)
+                .from(story)
+                .innerJoin(story.member, member)
+                .leftJoin(storyTag).on(storyTag.story.eq(story))
+                .leftJoin(tag).on(tag.eq(storyTag.tag))
+                .where(
+                        eqIsPublic(isPublic),
+                        likeSearchKeyword(searchRequest),
+                        eqMemberId(memberId),
+                        eqTagId(searchRequest.tagId())
+                )
+                .orderBy(getDynamicOrder(searchRequest))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        if (storyIds.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        // 스토리 기본 정보 조회
         List<StorySimpleResponseDto> storyDtoList = queryFactory
                 .select(new QStorySimpleResponseDto(
                         story.id,
@@ -89,52 +177,173 @@ public class StoryQueryRepository {
                         storyLike.count()
                 ))
                 .from(story)
-                .innerJoin(member).on(member.eq(story.member))
+                .innerJoin(story.member, member)
                 .leftJoin(storyLike).on(storyLike.story.eq(story))
-                .where(
-                        eqIsPublic(isPublic),
-                        likeSearchKeyword(searchRequest),
-                        eqMemberId(memberId)
-
-                )
+                .leftJoin(storyTag).on(storyTag.story.eq(story))
+                .leftJoin(tag).on(tag.eq(storyTag.tag))
+                .where(story.id.in(storyIds))
                 .groupBy(story.id,
                         story.title,
                         member.id,
                         member.nickName,
                         story.viewCount)
                 .orderBy(getDynamicOrder(searchRequest))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch();
 
-        // 태그 추가
+        // ID별 스토리 맵 생성
+        Map<Long, StorySimpleResponseDto> storyMap = storyDtoList.stream()
+                .collect(Collectors.toMap(StorySimpleResponseDto::getStoryId, Function.identity()));
+
+        // 태그 한 번에 조회
+        List<Tuple> tagResults = queryFactory
+                .select(storyTag.story.id, new QTagDto(
+                        tag.id,
+                        tag.name
+                ))
+                .from(storyTag)
+                .innerJoin(tag).on(tag.eq(storyTag.tag))
+                .where(storyTag.story.id.in(storyIds))
+                .fetch();
+
+        // 태그 정보 매핑
+        Map<Long, List<TagDto>> storyTagsMap = new HashMap<>();
+        for (Tuple tuple : tagResults) {
+            Long storyId = tuple.get(0, Long.class);
+            TagDto tagDto = tuple.get(1, TagDto.class);
+
+            storyTagsMap.computeIfAbsent(storyId, k -> new ArrayList<>()).add(tagDto);
+        }
+
+        // 태그 리스트 설정
         for (StorySimpleResponseDto storyDto : storyDtoList) {
-            List<TagDto> tagList = queryFactory
-                    .select(new QTagDto(
-                            tag.id,
-                            tag.name
-                    ))
-                    .from(storyTag)
-                    .innerJoin(tag).on(tag.eq(storyTag.tag))
-                    .where(storyTag.story.id.in(storyDto.getStoryId()))
-                    .fetch();
-            if (!tagList.isEmpty()) {
+            List<TagDto> tagList = storyTagsMap.get(storyDto.getStoryId());
+            if (tagList != null && !tagList.isEmpty()) {
                 storyDto.setTagList(tagList);
             }
         }
 
+        // 총 개수 조회 (모든 조건 포함)
         Long countResult = queryFactory
                 .select(story.count())
                 .from(story)
+                .innerJoin(story.member, member)
+                .leftJoin(storyTag).on(storyTag.story.eq(story))
+                .leftJoin(tag).on(tag.eq(storyTag.tag))
                 .where(
                         eqIsPublic(isPublic),
-                        likeSearchKeyword(searchRequest)
+                        likeSearchKeyword(searchRequest),
+                        eqMemberId(memberId),
+                        eqTagId(searchRequest.tagId())
                 )
                 .fetchOne();
         long total = countResult != null ? countResult : 0;
 
         return new PageImpl<>(storyDtoList, pageable, total);
     }
+
+
+    // NOTE: transform + groupBy (v3)
+//    public Page<StorySimpleResponseDto> findStoryPages(Pageable pageable, StorySearchRequestDto searchRequest, Boolean isPublic, Long memberId) {
+//
+//        List<StorySimpleResponseDto> storyDtoList = queryFactory
+//                .select(new QStorySimpleResponseDto(
+//                        story.id,
+//                        story.title,
+//                        member.id,
+//                        member.nickName,
+//                        story.viewCount,
+//                        storyLike.count()
+//                ))
+//                .from(story)
+//                .innerJoin(story.member, member)
+//                .leftJoin(storyLike).on(storyLike.story.eq(story))
+//                .leftJoin(storyTag).on(storyTag.story.eq(story))
+//                .leftJoin(tag).on(tag.eq(storyTag.tag))
+//                .where(
+//                        eqIsPublic(isPublic),
+//                        likeSearchKeyword(searchRequest),
+//                        eqMemberId(memberId),
+//                        eqTagId(searchRequest.tagId())
+//                )
+//                .groupBy(story.id, story.title, member.id, member.nickName, story.viewCount, tag.id, tag.name)
+//                .orderBy(getDynamicOrder(searchRequest))
+//                .offset(pageable.getOffset()).limit(pageable.getPageSize())
+//                .transform(groupBy(
+//                        story.id,
+//                        story.title,
+//                        member.id,
+//                        member.nickName,
+//                        story.viewCount).list(
+//                        Projections.constructor(
+//                                StorySimpleResponseDto.class,
+//                                story.id,
+//                                story.title,
+//                                member.id,
+//                                member.nickName,
+//                                story.viewCount,
+//                                storyLike.count(),
+//                                list(
+//                                        Projections.constructor(TagDto.class,
+//                                                tag.id,
+//                                                tag.name)
+//                                )
+//                        ))
+//                );
+//
+//
+//        Long countResult = queryFactory
+//                .select(story.count())
+//                .from(story)
+//                .where(
+//                        eqIsPublic(isPublic),
+//                        likeSearchKeyword(searchRequest),
+//                        eqMemberId(memberId),
+//                        eqTagId(searchRequest.tagId())
+//                )
+//                .fetchOne();
+//        long total = countResult != null ? countResult : 0;
+//
+//        return new PageImpl<>(storyDtoList, pageable, total);
+//    }
+//
+//    public Story findLatestStory(Long memberId) {
+//        return queryFactory
+//                .select(story)
+//                .from(story)
+//                .innerJoin(member).on(member.eq(story.member))
+//                .where(member.id.eq(memberId))
+//                .orderBy(story.createdAt.desc())
+//                .fetchFirst();
+//    }
+//
+//    public Page<StoryDubbingResponseDto> findStoryDubbings(Long memberId, Pageable pageable) {
+//        List<StoryDubbingResponseDto> storyDubbingList = queryFactory
+//                .select(new QStoryDubbingResponseDto(
+//                                storyDubbing.id,
+//                                story.title,
+//                                voice.name
+//                        )
+//                )
+//                .from(storyDubbing)
+//                .innerJoin(story).on(story.eq(storyDubbing.story))
+//                .innerJoin(voice).on(voice.eq(storyDubbing.voice))
+//                .innerJoin(member).on(member.eq(storyDubbing.member))
+//                .groupBy(storyDubbing.id)
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .orderBy(storyDubbing.dubbedAt.desc()) // 기본 최신순 정렬
+//                .where(member.id.eq(memberId))
+//                .fetch();
+//
+//        Long countResult = queryFactory
+//                .select(storyDubbing.count())
+//                .from(storyDubbing)
+//                .innerJoin(story).on(story.eq(storyDubbing.story))
+//                .where(storyDubbing.member.id.eq(memberId))
+//                .fetchOne();
+//
+//        return new PageImpl<>(storyDubbingList, pageable, countResult != null ? countResult : 0);
+//    }
 
     public Story findLatestStory(Long memberId) {
         return queryFactory
@@ -174,6 +383,15 @@ public class StoryQueryRepository {
 
         return new PageImpl<>(storyDubbingList, pageable, countResult != null ? countResult : 0);
     }
+
+    private BooleanExpression eqTagId(Long tagId) {
+        if (tagId == null) {
+            return null;
+        }
+        return tag.id.eq(tagId);
+    }
+
+
 
     private BooleanExpression eqIsPublic(Boolean isPublic) {
         if (isPublic == null) {
