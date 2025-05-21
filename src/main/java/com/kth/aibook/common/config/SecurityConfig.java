@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/login/**", "/oauth2/authorization/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stories/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/tags").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/stories/*/members/*/voices/*/dubbing/completed").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/token/reissue").permitAll()
                 .anyRequest().authenticated()
