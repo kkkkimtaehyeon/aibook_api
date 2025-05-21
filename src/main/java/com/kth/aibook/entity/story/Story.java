@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @NoArgsConstructor
 @Getter
@@ -46,8 +45,11 @@ public class Story {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToMany(mappedBy = "story", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.PERSIST)
-    private List<StoryPage> storyPages = new ArrayList<>();
+    @OneToMany(mappedBy = "story", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<StoryPage> storyPages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "story", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private final Set<StoryTag> storyTags = new HashSet<>();
 
     @Builder
     public Story(Long id, String baseStory, String title, LocalDateTime createdAt, boolean isPublic, boolean isDubbed, Member member) {
@@ -63,6 +65,11 @@ public class Story {
     public void addStoryPage(StoryPage storyPage) {
         storyPage.setStory(this);
         this.storyPages.add(storyPage);
+    }
+
+    public void addStoryTag(StoryTag storyTag) {
+        storyTag.setStory(this);
+        this.storyTags.add(storyTag);
     }
 
     public void completeStory(StoryCompleteRequestDto completeRequest) {
