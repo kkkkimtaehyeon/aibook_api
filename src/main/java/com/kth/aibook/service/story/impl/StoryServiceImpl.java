@@ -13,12 +13,14 @@ import com.kth.aibook.exception.story.TagNotFoundException;
 import com.kth.aibook.repository.member.MemberRepository;
 import com.kth.aibook.repository.story.StoryRepository;
 import com.kth.aibook.repository.story.TagRepository;
+import com.kth.aibook.service.cloud.CloudStorageService;
 import com.kth.aibook.service.story.StoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 
 @RequiredArgsConstructor
 @Service
@@ -26,12 +28,18 @@ public class StoryServiceImpl implements StoryService {
     private final StoryRepository storyRepository;
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
+    private final CloudStorageService cloudStorageService;
 
     @Transactional
     @Override
     public Long createStory(Long memberId, StoryCreateRequestDto request) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다. memberId: " + memberId));
-        Story story = request.toEntity(member, LocalDateTime.now());
+        // 커버 이미지 업로드
+        byte[] imageBytes = Base64.getDecoder().decode(request.coverImageBase64());
+        String coverImageUrl = cloudStorageService.uploadBytes(imageBytes, "image/jpeg");
+
+        Story story = request.toEntity(member, coverImageUrl, LocalDateTime.now());
+
         // story에 page 추가
         String[] sentences = request.selectedSentences();
         for (int pageNumber = 0; pageNumber < sentences.length; pageNumber++) {
@@ -41,6 +49,8 @@ public class StoryServiceImpl implements StoryService {
                     .build();
             story.addStoryPage(page);
         }
+
+
         // story에 tag 추가
         long[] tagIds = request.tagIds();
         if (tagIds != null) {

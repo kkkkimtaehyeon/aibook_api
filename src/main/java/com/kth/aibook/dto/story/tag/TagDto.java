@@ -1,15 +1,7 @@
 package com.kth.aibook.dto.story.tag;//package com.kth.aibook.dto.story.tag;
-//
-//import com.querydsl.core.annotations.QueryProjection;
-//public record TagDto(Long tagId, String name) {
-//    @QueryProjection
-//    public TagDto(Long tagId, String name) {
-//        this(tagId, name);
-//    }
-//}
-
 
 import com.querydsl.core.annotations.QueryProjection;
+
 import lombok.Getter;
 
 @Getter

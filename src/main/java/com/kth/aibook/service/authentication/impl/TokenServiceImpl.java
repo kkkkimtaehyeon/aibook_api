@@ -1,13 +1,11 @@
 package com.kth.aibook.service.authentication.impl;
 
+import com.kth.aibook.common.exception.JwtExpiredException;
 import com.kth.aibook.common.provider.JwtProvider;
 import com.kth.aibook.dto.auth.TokenRequestDto;
 import com.kth.aibook.dto.auth.Tokens;
 import com.kth.aibook.service.authentication.TokenService;
 import io.jsonwebtoken.JwtException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,22 +56,26 @@ public class TokenServiceImpl implements TokenService {
     @Transactional
     @Override
     public Tokens reissueAccessToken(String refreshToken) {
-        // rt 검증
-        jwtProvider.validateToken(refreshToken);
-        // redis에 저장된 rt와 비교
-        TokenRequestDto tokenRequest = jwtProvider.extractTokenRequestFromToken(refreshToken);
-        Long memberId = tokenRequest.memberId();
-        String savedRefreshToken = getRefreshTokenFromRedis(memberId);
-        if (!refreshToken.equals(savedRefreshToken)) {
-            throw new JwtException("access token reissue failed: refresh token doesnt match");
-        }
-        // at, rt 재발급
-        String newAccessToken = jwtProvider.generateAccessToken(tokenRequest);
-        String newRefreshToken = jwtProvider.generateRefreshToken(tokenRequest);
-        // redis에 rt를 새로 갱신
-        setRefreshTokenInRedis(memberId, newRefreshToken);
+        try {
+            // rt 검증
+            jwtProvider.validateToken(refreshToken);
+            // redis에 저장된 rt와 비교
+            TokenRequestDto tokenRequest = jwtProvider.extractTokenRequestFromToken(refreshToken);
+            Long memberId = tokenRequest.memberId();
+            String savedRefreshToken = getRefreshTokenFromRedis(memberId);
+            if (!refreshToken.equals(savedRefreshToken)) {
+                throw new JwtException("access token reissue failed: refresh token doesnt match");
+            }
+            // at, rt 재발급
+            String newAccessToken = jwtProvider.generateAccessToken(tokenRequest);
+            String newRefreshToken = jwtProvider.generateRefreshToken(tokenRequest);
+            // redis에 rt를 새로 갱신
+            setRefreshTokenInRedis(memberId, newRefreshToken);
 
-        return new Tokens(newAccessToken, newRefreshToken);
+            return new Tokens(newAccessToken, newRefreshToken);
+        } catch (JwtExpiredException e) {
+            throw new JwtExpiredException("re-login required", e);
+        }
     }
 
     @Override

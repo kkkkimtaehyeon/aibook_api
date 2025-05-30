@@ -44,4 +44,13 @@ public class Member {
         this.createdAt = createdAt;
         this.role = role;
     }
+
+    public Member(String email, String nickName, LocalDate birthDate, LocalDateTime createdAt, MemberRole role, OauthMember oauthMember) {
+        this.email = email;
+        this.nickName = nickName;
+        this.birthDate = birthDate;
+        this.createdAt = createdAt;
+        this.role = role;
+        this.oauthMember = oauthMember;
+    }
 }

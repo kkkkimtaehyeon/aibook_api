@@ -47,7 +47,7 @@ public class AuthController {
      * @return
      */
     @GetMapping("/login/oauth2/code/kakao")
-    public ResponseEntity<Object> kakaoLogin(@RequestParam("code") String code, HttpServletResponse res) {
+    public ResponseEntity<ApiResponseBody> kakaoLogin(@RequestParam("code") String code, HttpServletResponse res) {
         String kakaoToken = kakaoAuthenticationService.getAccessToken(code);
         long oauthProviderMemberId = kakaoAuthenticationService.getUserIdFromToken(kakaoToken);
         try {

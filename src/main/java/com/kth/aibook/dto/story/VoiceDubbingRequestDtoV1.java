@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class VoiceDubbingRequestDto {
+public class VoiceDubbingRequestDtoV1 {
     private String audioUrl;
     private Map<Long, String> storyPageMap = new HashMap<>();
     private String webhookUrl;
 
-    public VoiceDubbingRequestDto(Story story, Voice voice, String webhookUrl) {
+    public VoiceDubbingRequestDtoV1(Story story, Voice voice, String webhookUrl) {
         this.audioUrl = voice.getAudioUrl();
         story.getStoryPages().forEach(storyPage -> {
             storyPageMap.put(storyPage.getId(), storyPage.getContent());

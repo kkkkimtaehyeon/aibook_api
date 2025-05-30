@@ -7,4 +7,5 @@ public interface CloudStorageService {
     String uploadBytes(byte[] bytes, String format);
     String getFile(String fileName);
     void removeFile(String fileName);
+    String getPreSignedUrlForUpdate(String key);
 }

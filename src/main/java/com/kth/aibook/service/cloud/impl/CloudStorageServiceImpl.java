@@ -1,6 +1,8 @@
 package com.kth.aibook.service.cloud.impl;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.kth.aibook.service.cloud.CloudStorageService;
 import lombok.RequiredArgsConstructor;
@@ -12,15 +14,24 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class CloudStorageServiceImpl implements CloudStorageService {
-    private final AmazonS3 amazonS3;
+    private final AmazonS3 s3;
 
     @Value("${aws.s3.bucket-name}")
     private String BUCKET;
+
+    public String getPreSignedUrlForUpdate(String key) {
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(BUCKET, key)
+                .withMethod(HttpMethod.PUT)
+//                .withContentType("audio/wav")
+                .withExpiration(getPreSignedExpiration());
+        return s3.generatePresignedUrl(generatePresignedUrlRequest).toString();
+    }
 
     @Override
     public String uploadFile(MultipartFile multipartFile) {
@@ -35,7 +46,7 @@ public class CloudStorageServiceImpl implements CloudStorageService {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(format);
-        amazonS3.putObject(BUCKET, fileName, byteArrayInputStream, metadata);
+        s3.putObject(BUCKET, fileName, byteArrayInputStream, metadata);
         return fetchUrl(fileName);
     }
 
@@ -58,7 +69,7 @@ public class CloudStorageServiceImpl implements CloudStorageService {
     private void putMultiPartFile(MultipartFile multipartFile, String fileName) {
         try {
             File file = convert(multipartFile, fileName);
-            amazonS3.putObject(BUCKET, fileName, file);
+            s3.putObject(BUCKET, fileName, file);
         } catch (IOException e) {
             //TODO: 예외처리 추가 필요
             throw new RuntimeException("파일 변환 중 오류가 발생했습니다!");
@@ -66,7 +77,7 @@ public class CloudStorageServiceImpl implements CloudStorageService {
     }
 
     private String fetchUrl(String fileName) {
-        return amazonS3.getUrl(BUCKET, fileName).toString();
+        return s3.getUrl(BUCKET, fileName).toString();
     }
 
     private File convert(MultipartFile multipartFile, String fileName) throws IOException {
@@ -76,5 +87,10 @@ public class CloudStorageServiceImpl implements CloudStorageService {
             fos.write(multipartFile.getBytes());
         }
         return file;
+    }
+
+    private Date getPreSignedExpiration() {
+        long expirationMillis = System.currentTimeMillis() + (1000 * 60 * 15); // 15분
+        return new Date(expirationMillis);
     }
 }

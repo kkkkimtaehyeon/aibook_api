@@ -1,0 +1,9 @@
+spring:
+  application:
+    name:
+      AiBook
+  config:
+    import: classpath:application-secret.yml
+server:
+  port: 8080
+

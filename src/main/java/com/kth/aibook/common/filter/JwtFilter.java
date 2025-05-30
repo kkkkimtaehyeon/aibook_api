@@ -3,6 +3,7 @@ package com.kth.aibook.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kth.aibook.common.ApiResponse;
+import com.kth.aibook.common.exception.JwtExpiredException;
 import com.kth.aibook.common.provider.JwtProvider;
 import com.kth.aibook.service.authentication.TokenService;
 import io.jsonwebtoken.ExpiredJwtException;
