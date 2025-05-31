@@ -52,9 +52,9 @@ jobs:
           script: |
             cd /aibook-service
 
-            docker-compose --profile api pull
+            docker compose --profile api pull
 
-            docker-compose --profile api up -d
+            docker compose --profile api up -d
 
 
 
