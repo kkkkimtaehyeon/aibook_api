@@ -1,7 +1,4 @@
 spring:
-  application:
-    name:
-      AiBook
   jpa:
     hibernate:
       ddl-auto: none
@@ -10,10 +7,3 @@ spring:
         format_sql: true
         show_sql: true
     open-in-view: false
-  config:
-    import: classpath:application-secret.yml
-
-
-server:
-  port: 8080
-
