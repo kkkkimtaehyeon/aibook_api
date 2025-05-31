@@ -2,16 +2,16 @@ package com.kth.aibook.controller.member;
 
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
+import com.kth.aibook.dto.common.ApiResponseBody;
 import com.kth.aibook.dto.member.*;
 import com.kth.aibook.exception.member.MemberNotFoundException;
-import com.kth.aibook.service.cloud.CloudStorageService;
 import com.kth.aibook.service.member.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,18 +20,19 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
 
+    // 회원가입
     @PostMapping("/api/members")
     public ApiResponse<Void> createMember(@Valid @RequestBody MemberCreateRequestDto createRequest) {
         memberService.createMember(createRequest);
         return ApiResponse.success(HttpStatus.CREATED);
     }
 
-    // 회원정보
-    @GetMapping("/api/me")
-    public ApiResponse<MemberSimpleDto> getMyInfo(@AuthenticationPrincipal CustomUserDetails userDetail) {
+
+    @GetMapping("/api/members/me")
+    public ResponseEntity<ApiResponseBody> getMyInfo(@AuthenticationPrincipal CustomUserDetails userDetail) {
         Long memberId = getMemberIdFromUserDetail(userDetail);
         MemberSimpleDto memberSimpleDto = memberService.getMemberSimpleInfoById(memberId);
-        return ApiResponse.success(HttpStatus.OK, memberSimpleDto);
+        return ResponseEntity.ok(new ApiResponseBody(memberSimpleDto));
     }
 
     // 회원정보
@@ -58,12 +59,11 @@ public class MemberController {
         return ApiResponse.success(HttpStatus.OK, null);
     }
 
-    // 목소리 목록 조회
     @GetMapping("/api/voices")
-    public ApiResponse<List<VoiceDto>> getMemberVoices(@AuthenticationPrincipal CustomUserDetails userDetail) {
+    public ResponseEntity<ApiResponseBody> getMemberVoices(@AuthenticationPrincipal CustomUserDetails userDetail) {
         Long memberId = getMemberIdFromUserDetail(userDetail);
         List<VoiceDto> voices = memberService.getVoices(memberId);
-        return ApiResponse.success(HttpStatus.OK, voices);
+        return ResponseEntity.ok(new ApiResponseBody(voices));
     }
 
     /**

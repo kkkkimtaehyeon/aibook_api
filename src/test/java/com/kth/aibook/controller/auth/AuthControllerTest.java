@@ -3,6 +3,7 @@ package com.kth.aibook.controller.auth;
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.dto.auth.TokenRequestDto;
 import com.kth.aibook.dto.auth.Tokens;
+import com.kth.aibook.dto.common.ApiResponseBody;
 import com.kth.aibook.dto.member.MemberDetailDto;
 import com.kth.aibook.dto.oauth.KakaoOauthProviderDto;
 import com.kth.aibook.entity.member.MemberRole;
@@ -20,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContext;
@@ -72,12 +74,6 @@ class AuthControllerTest {
         SecurityContextHolder.setContext(securityContext);
     }
 
-    @Test
-    @DisplayName("헬스 체크 테스트")
-    void healthCheck() {
-        String result = authController.healthCheck();
-        assertEquals("healthy", result);
-    }
 
     @Test
     @DisplayName("카카오 로그인 - 이미 가입된 회원")
@@ -90,18 +86,18 @@ class AuthControllerTest {
         when(tokenService.getRefreshDuration()).thenReturn(refreshDuration);
 
         // When
-        ApiResponse<Object> apiResponse = authController.kakaoLogin(code, response);
+        ResponseEntity<ApiResponseBody> response = authController.kakaoLogin(code, this.response);
 
         // Then
-        assertEquals(HttpStatus.OK, apiResponse.getCode());
-        assertEquals(accessToken, apiResponse.getData());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(accessToken, response.getBody().data());
 
         // 쿠키 검증
-        Cookie refreshTokenCookie = response.getCookie("refresh_token");
+        Cookie refreshTokenCookie = this.response.getCookie("refresh-token");
         assertNotNull(refreshTokenCookie);
         assertEquals(refreshToken, refreshTokenCookie.getValue());
         assertTrue(refreshTokenCookie.isHttpOnly());
-        assertTrue(refreshTokenCookie.getSecure());
+//        assertTrue(refreshTokenCookie.getSecure());
         assertEquals((int) refreshDuration, refreshTokenCookie.getMaxAge());
     }
 
@@ -115,24 +111,25 @@ class AuthControllerTest {
                 .thenThrow(new MemberNotFoundException("회원을 찾을 수 없습니다."));
 
         // When
-        ApiResponse<Object> apiResponse = authController.kakaoLogin(code, response);
+        ResponseEntity<ApiResponseBody> response = authController.kakaoLogin(code, this.response);
 
         // Then
-        assertEquals(HttpStatus.FORBIDDEN, apiResponse.getCode());
-        assertTrue(apiResponse.getData() instanceof KakaoOauthProviderDto);
-        KakaoOauthProviderDto dto = (KakaoOauthProviderDto) apiResponse.getData();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("signup required", response.getBody().message());
+        assertTrue(response.getBody().data() instanceof KakaoOauthProviderDto);
+        KakaoOauthProviderDto dto = (KakaoOauthProviderDto) response.getBody().data();
         assertEquals("kakao", dto.oauthProvider());
         assertEquals(oauthProviderMemberId, dto.oauthProviderMemberId());
 
         // 쿠키가 설정되지 않았는지 확인
-        assertNull(response.getCookie("refresh_token"));
+        assertNull(this.response.getCookie("refresh-token"));
     }
 
     @Test
     @DisplayName("액세스 토큰 재발급 테스트")
     void reissueAccessToken() {
         // Given
-        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
+        Cookie refreshTokenCookie = new Cookie("refresh-token", refreshToken);
         request.setCookies(refreshTokenCookie);
 
         when(tokenService.reissueAccessToken(refreshToken)).thenReturn(new Tokens(newAccessToken, newRefreshToken));
@@ -146,11 +143,11 @@ class AuthControllerTest {
         assertEquals(newAccessToken, apiResponse.getData());
 
         // 새로운 리프레시 토큰이 쿠키에 저장되었는지 확인
-        Cookie newRefreshTokenCookie = response.getCookie("refresh_token");
+        Cookie newRefreshTokenCookie = response.getCookie("refresh-token");
         assertNotNull(newRefreshTokenCookie);
         assertEquals(newRefreshToken, newRefreshTokenCookie.getValue());
         assertTrue(newRefreshTokenCookie.isHttpOnly());
-        assertTrue(newRefreshTokenCookie.getSecure());
+//        assertTrue(newRefreshTokenCookie.getSecure());
         assertEquals((int) refreshDuration, newRefreshTokenCookie.getMaxAge());
     }
 

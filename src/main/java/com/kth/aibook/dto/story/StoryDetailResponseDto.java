@@ -16,6 +16,7 @@ public class StoryDetailResponseDto {
     private Long memberId;
     private String author;
     private Long viewCount;
+    private String coverImageUrl;
 //    private Long likeCount;
     private List<StoryPageDto> pages;
     private boolean isLiked = false;
@@ -25,6 +26,7 @@ public class StoryDetailResponseDto {
         this.title = story.getTitle();
         this.memberId = story.getMember().getId();
         this.viewCount = story.getViewCount();
+        this.coverImageUrl = story.getCoverImageUrl();
         this.author = story.getMember().getNickName();
         this.pages = story.getStoryPages().stream().map(StoryPageDto::new).toList();
     }
@@ -35,6 +37,7 @@ public class StoryDetailResponseDto {
         this.memberId = story.getMember().getId();
         this.author = story.getMember().getNickName();
         this.viewCount = story.getViewCount();
+        this.coverImageUrl = story.getCoverImageUrl();
         this.pages = story.getStoryPages().stream().map(StoryPageDto::new).toList();
 
         this.isLiked = isLiked;

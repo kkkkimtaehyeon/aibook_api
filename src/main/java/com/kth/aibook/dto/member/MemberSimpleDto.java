@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class MemberSimpleDto {
-    private Long memberId;
-    private String memberName;
+    private Long id;
+    private String name;
 
-    public MemberSimpleDto(Long memberId, String memberName) {
-        this.memberId = memberId;
-        this.memberName = memberName;
+    public MemberSimpleDto(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
     // 프로필 사진?
 }

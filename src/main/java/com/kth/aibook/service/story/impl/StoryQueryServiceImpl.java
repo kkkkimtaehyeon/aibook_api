@@ -85,7 +85,7 @@ public class StoryQueryServiceImpl implements StoryQueryService {
     @Transactional(readOnly = true)
     @Override
     public Page<StoryDubbingResponseDto> getMyDubbedStories(Long memberId, Pageable pageable) {
-        return storyQueryRepository.findStoryDubbings(memberId, pageable);
+        return storyQueryRepository.findDubbingStories(memberId, pageable);
     }
 
     @Transactional(readOnly = true) // 없으면 LazyInitializationException 발생

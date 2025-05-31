@@ -40,7 +40,8 @@ public class StoryQueryRepository {
                         member.id,
                         member.nickName,
                         story.viewCount,
-                        storyLike.count()
+                        storyLike.count(),
+                        story.coverImageUrl
                 ))
                 .from(story)
                 .innerJoin(member).on(member.eq(story.member))
@@ -65,7 +66,8 @@ public class StoryQueryRepository {
                         member.id,
                         member.nickName,
                         story.viewCount,
-                        storyLike.count()
+                        storyLike.count(),
+                        story.coverImageUrl
                 ))
                 .from(story)
                 .innerJoin(member).on(member.eq(story.member))
@@ -141,6 +143,7 @@ public class StoryQueryRepository {
 //        return new PageImpl<>(storyDtoList, pageable, total);
 //    }
 
+    // 동화 목록 조회
     // NOTE: ID목록 먼저 조회하고 태그 목록 한방 조회 (v2) hibernate: 5
     public Page<StorySimpleResponseDto> findStoryPages(Pageable pageable, StorySearchRequestDto searchRequest, Boolean isPublic, Long memberId) {
         // 스토리 ID 목록을 먼저 조회
@@ -149,6 +152,7 @@ public class StoryQueryRepository {
                 .select(story.id)
                 .from(story)
                 .innerJoin(story.member, member)
+                .leftJoin(storyLike).on(storyLike.story.eq(story))
                 .leftJoin(storyTag).on(storyTag.story.eq(story))
                 .leftJoin(tag).on(tag.eq(storyTag.tag))
                 .where(
@@ -157,6 +161,7 @@ public class StoryQueryRepository {
                         eqMemberId(memberId),
                         eqTagId(searchRequest.tagId())
                 )
+                .groupBy(story.id)
                 .orderBy(getDynamicOrder(searchRequest))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -174,7 +179,8 @@ public class StoryQueryRepository {
                         member.id,
                         member.nickName,
                         story.viewCount,
-                        storyLike.count()
+                        storyLike.countDistinct(),
+                        story.coverImageUrl
                 ))
                 .from(story)
                 .innerJoin(story.member, member)
@@ -186,13 +192,10 @@ public class StoryQueryRepository {
                         story.title,
                         member.id,
                         member.nickName,
-                        story.viewCount)
+                        story.viewCount,
+                        storyLike)
                 .orderBy(getDynamicOrder(searchRequest))
                 .fetch();
-
-        // ID별 스토리 맵 생성
-        Map<Long, StorySimpleResponseDto> storyMap = storyDtoList.stream()
-                .collect(Collectors.toMap(StorySimpleResponseDto::getStoryId, Function.identity()));
 
         // 태그 한 번에 조회
         List<Tuple> tagResults = queryFactory
@@ -218,7 +221,7 @@ public class StoryQueryRepository {
         for (StorySimpleResponseDto storyDto : storyDtoList) {
             List<TagDto> tagList = storyTagsMap.get(storyDto.getStoryId());
             if (tagList != null && !tagList.isEmpty()) {
-                storyDto.setTagList(tagList);
+                storyDto.setTags(tagList);
             }
         }
 
@@ -227,6 +230,7 @@ public class StoryQueryRepository {
                 .select(story.count())
                 .from(story)
                 .innerJoin(story.member, member)
+                .leftJoin(storyLike).on(storyLike.story.eq(story))
                 .leftJoin(storyTag).on(storyTag.story.eq(story))
                 .leftJoin(tag).on(tag.eq(storyTag.tag))
                 .where(
@@ -355,12 +359,14 @@ public class StoryQueryRepository {
                 .fetchFirst();
     }
 
-    public Page<StoryDubbingResponseDto> findStoryDubbings(Long memberId, Pageable pageable) {
+    public Page<StoryDubbingResponseDto> findDubbingStories(Long memberId, Pageable pageable) {
         List<StoryDubbingResponseDto> storyDubbingList = queryFactory
                 .select(new QStoryDubbingResponseDto(
                                 storyDubbing.id,
                                 story.title,
-                                voice.name
+                                story.member.nickName,
+                                voice.name,
+                                story.coverImageUrl
                         )
                 )
                 .from(storyDubbing)
@@ -392,7 +398,6 @@ public class StoryQueryRepository {
     }
 
 
-
     private BooleanExpression eqIsPublic(Boolean isPublic) {
         if (isPublic == null) {
             return null;
@@ -421,7 +426,7 @@ public class StoryQueryRepository {
         return switch (sortBy) {
             case "createdAt" -> new OrderSpecifier<>(orderDirection, story.createdAt);
             case "viewCount" -> new OrderSpecifier<>(orderDirection, story.viewCount);
-            case "likeCount" -> new OrderSpecifier<>(orderDirection, storyLike.count());
+            case "likeCount" -> new OrderSpecifier<>(orderDirection, storyLike.countDistinct());
             default -> new OrderSpecifier<>(Order.DESC, story.createdAt);
         };
     }

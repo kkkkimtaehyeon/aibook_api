@@ -6,7 +6,7 @@ CREATE TABLE `member`
     `birth_date`    DATE         NOT NULL,
     `created_at`    DATETIME     NOT NULL,
     `role`          VARCHAR(20)  NOT NULL,
-    oauth_member_id BIGINT NULL,
+    oauth_member_id BIGINT       NULL,
     primary key (member_id),
     FOREIGN KEY (oauth_member_id) references oauth_member (oauth_member_id)
 );
@@ -22,17 +22,19 @@ CREATE TABLE oauth_member
 
 CREATE TABLE story
 (
-    story_id   BIGINT       NOT NULL AUTO_INCREMENT,
-    base_story TEXT         NOT NULL,
-    title      VARCHAR(100) NOT NULL,
-    created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_public  TINYINT(1)   NOT NULL DEFAULT FALSE,
-    is_dubbed  TINYINT(1)   NOT NULL DEFAULT FALSE,
-    view_count BIGINT       NOT NULL DEFAULT 0,
-    member_id  BIGINT       NOT NULL,
+    story_id        BIGINT        NOT NULL AUTO_INCREMENT,
+    base_story      TEXT          NOT NULL,
+    title           VARCHAR(100)  NOT NULL,
+    created_at      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_public       TINYINT(1)    NOT NULL DEFAULT TRUE,
+    is_dubbed       TINYINT(1)    NOT NULL DEFAULT FALSE,
+    cover_image_url VARCHAR(2000) NOT NULL,
+    view_count      BIGINT        NOT NULL DEFAULT 0,
+    member_id       BIGINT        NOT NULL,
     PRIMARY KEY (story_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE story_page
 (
@@ -91,6 +93,22 @@ CREATE TABLE story_page_dubbing
     FOREIGN KEY (story_page_id) REFERENCES story_page (story_page_id)
 );
 
+CREATE TABLE tag
+(
+    tag_id BIGINT      NOT NULL AUTO_INCREMENT,
+    name   VARCHAR(20) NOT NULL UNIQUE,
+    PRIMARY KEY (tag_id)
+);
+
+CREATE TABLE story_tag
+(
+    story_tag_id BIGINT NOT NULL AUTO_INCREMENT,
+    story_id     BIGINT NOT NULL,
+    tag_id       BIGINT NOT NULL,
+    PRIMARY KEY (story_tag_id),
+    FOREIGN KEY (story_id) REFERENCES story (story_id),
+    FOREIGN KEY (tag_id) REFERENCES tag (tag_id)
+);
 
 drop table story_page;
 drop table story_like;

@@ -3,6 +3,7 @@ package com.kth.aibook.controller.story;
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.common.exception.StoryDubbingException;
+import com.kth.aibook.dto.common.ApiResponseBody;
 import com.kth.aibook.dto.story.*;
 import com.kth.aibook.service.story.StoryDubbingService;
 import com.kth.aibook.service.story.StoryLikeService;
@@ -10,6 +11,7 @@ import com.kth.aibook.service.story.StoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,11 +27,11 @@ public class StoryController {
 
     // 동화 생성
     @PostMapping
-    public ApiResponse<Long> createStory(@AuthenticationPrincipal CustomUserDetails user,
-                                         @Valid @RequestBody StoryCreateRequestDto request) {
+    public ResponseEntity<ApiResponseBody> createStory(@AuthenticationPrincipal CustomUserDetails user,
+                                                       @Valid @RequestBody StoryCreateRequestDto request) {
         Long memberId = user.getMemberId();
-        Long createdStoryId = storyService.createStory(memberId, request);
-        return ApiResponse.success(HttpStatus.CREATED, createdStoryId);
+        Long savedStoryId = storyService.createStory(memberId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseBody(savedStoryId));
     }
 
     // 동화 좋아요
@@ -43,9 +45,9 @@ public class StoryController {
 
     // 동화 삭제
     @DeleteMapping("/{story-id}")
-    public ApiResponse<Void> deleteStory(@PathVariable("story-id") Long storyId) {
+    public ResponseEntity<Void> deleteStory(@PathVariable("story-id") Long storyId) {
         storyService.removeStory(storyId);
-        return ApiResponse.success(HttpStatus.NO_CONTENT, null);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
     // 동화 수정

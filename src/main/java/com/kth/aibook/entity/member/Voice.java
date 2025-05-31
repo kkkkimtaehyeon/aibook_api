@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+//@SQLDelete(sql = "UPDATE voice SET deleted_at = CURRENT_TIMESTAMP WHERE voice_id = ?")
+//@SQLRestriction("deleted_at is null")
 @NoArgsConstructor
 @Getter
 @Entity

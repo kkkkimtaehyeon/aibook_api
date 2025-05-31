@@ -1,8 +1,8 @@
 package com.kth.aibook.common.provider;
 
 import com.kth.aibook.common.CustomUserDetails;
+import com.kth.aibook.common.exception.JwtExpiredException;
 import com.kth.aibook.dto.auth.TokenRequestDto;
-import com.kth.aibook.dto.member.MemberDetailDto;
 import com.kth.aibook.entity.member.MemberRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -54,7 +54,7 @@ public class JwtProvider {
                     .build()
                     .parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
-            throw new JwtException("토큰이 만료되었습니다.", e);
+            throw new JwtExpiredException("token expired", e);
         } catch (MalformedJwtException e) {
             throw new JwtException("토큰이 변조되었습니다.", e);
         } catch (Exception e) {

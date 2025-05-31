@@ -20,6 +20,9 @@ public class Story {
     @Column(name = "story_id", nullable = false)
     private Long id;
 
+    @Column(nullable = false)
+    private String coverImageUrl;
+
     @Column(columnDefinition = "TEXT", nullable = false)
     private String baseStory;
 
@@ -52,8 +55,9 @@ public class Story {
     private final Set<StoryTag> storyTags = new HashSet<>();
 
     @Builder
-    public Story(Long id, String baseStory, String title, LocalDateTime createdAt, boolean isPublic, boolean isDubbed, Member member) {
+    public Story(Long id, String coverImageUrl, String baseStory, String title, LocalDateTime createdAt, boolean isPublic, boolean isDubbed, Member member) {
         this.id = id;
+        this.coverImageUrl = coverImageUrl;
         this.baseStory = baseStory;
         this.title = title;
         this.createdAt = createdAt;
