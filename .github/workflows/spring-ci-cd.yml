@@ -19,7 +19,9 @@ jobs:
           java-version: '21'
 
       - name: build with gradle
-        run: ./gradlew clean build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
 
       - name: login to docker hub
         uses: docker/login-action@v3
