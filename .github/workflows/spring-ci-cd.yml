@@ -18,6 +18,11 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: create application-test.yml
+        run: |
+          mkdir -p src/test/resources
+          echo ${{ secrets.APPLICATION_TEST_YML }} | base64 -d > src/main/resources/application-test.yml
+
       - name: build with gradle
         run: |
           chmod +x ./gradlew
