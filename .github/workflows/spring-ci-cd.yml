@@ -46,7 +46,6 @@ jobs:
           push: true
           tags: |
             spring-api-app-image:latest
-            # ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} # Commit SHA 태그 추가
           file: Dockerfile
 
       - name: deploy to ec2
