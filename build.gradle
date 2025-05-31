@@ -14,8 +14,7 @@ java {
 }
 
 bootJar {
-	archiveBaseName.set('aibook')
-	archiveVersion.set('latest')
+	archiveFileName = 'aibook-api:latest.jar'
 }
 repositories {
 	mavenCentral()

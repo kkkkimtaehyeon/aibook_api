@@ -1,4 +1,4 @@
-name: spring ci/cd
+name: api-server ci/cd
 
 on:
   push:
@@ -35,8 +35,7 @@ jobs:
           context: .
           push: true
           tags: |
-            spring-api-app-image:latest
-            # ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} # Commit SHA 태그 추가
+            ${{secrets.DOCKER_USERNAME }}/aibook-api-image:latest
           file: Dockerfile
 
       - name: deploy to ec2
@@ -46,11 +45,11 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /project
+            cd /aibook-service
 
-            docker-compose pull
+            docker-compose --profile api pull
 
-            docker-compose up -d
+            docker-compose --profile api up -d
 
 
 

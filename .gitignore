@@ -40,3 +40,5 @@ application-secret.yml
 application-test.yml
 
 /src/main/generated
+
+.env

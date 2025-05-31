@@ -7,3 +7,36 @@ spring:
         format_sql: true
         show_sql: true
     open-in-view: false
+
+  datasource:
+    url: ${mysql-url}
+    driver-class-name: ${mysql-driver-class-name}
+    username: ${mysql-username}
+    password: ${mysql-password}
+  data:
+    redis:
+      host: ${redis-host}
+      port: ${redis-port}
+      password: ${redis-password}
+      database: ${redis-db-api}
+
+jwt:
+  secret: ${jwt-secret}
+  access-duration: ${jwt-access-duration}
+  refresh-duration: ${jwt-refresh-duration}
+
+oauth:
+  kakao:
+    client-id: ${kakao-client-id}
+    client-secret: ${kakao-client-secret}
+    token-uri: "https://kauth.kakao.com/oauth/token"
+    user-info-uri: "https://kapi.kakao.com/v2/user/me"
+    redirect-uri: "http://localhost:5173/login/oauth2/code/kakao"
+    grant-type: authorization_code
+
+aws:
+  access-key: ${aws-access-key}
+  secret-key: ${aws-secret-key}
+  region: ${aws-region}
+  s3:
+    bucket-name: ${aws-s3-bucket-name}
