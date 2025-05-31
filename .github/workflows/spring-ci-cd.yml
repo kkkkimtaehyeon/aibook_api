@@ -21,7 +21,7 @@ jobs:
       - name: create application-secret.yml
         run: |
           mkdir -p src/main/resources
-          echo ${{ secrets.APPLICATION_SECRET_YML }} > src/main/resources/application-secret.yml
+          echo ${{ secrets.APPLICATION_SECRET_YML }} | base64 -d > src/main/resources/application-secret.yml
 
       - name: build with gradle
         run: |
