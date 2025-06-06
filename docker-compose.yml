@@ -1,0 +1,69 @@
+services:
+  # Cache
+  redis:
+    image: redis:8.0
+    container_name: aibook-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass aibookpwredis123 # 비밀번호: aibookpwredis123
+    volumes:
+      - redis_data:/data # Redis 데이터 영속화를 위한 볼륨 추가
+    networks:
+      - my-app-network
+  # DB
+  mysql:
+    image: mysql:8.0
+    container_name: aibook-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234 # MySQL root 비밀번호 설정
+      MYSQL_DATABASE: aibook           # 초기 생성할 데이터베이스 이름
+      MYSQL_USER: admin                  # 초기 생성할 사용자 이름
+      MYSQL_PASSWORD: aibookpw123           # 초기 생성할 사용자 비밀번호
+    volumes:
+      - mysql_data:/var/lib/mysql # MySQL 데이터 영속화를 위한 볼륨 추가
+    networks:
+      - my-app-network
+
+  # API SERVER
+  api-service:
+    image: 4kimtaehyeon/aibook-api-image:latest
+    container_name: aibook-api
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      - redis
+      - mysql
+    networks:
+      - my-app-network
+    restart: "no"
+    profiles:
+      - api
+      - full
+
+  # AI SERVER
+  ai-service:
+    image: 4kimtaehyeon/aibook-ai-image:latest
+    container_name: aibook-ai
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    networks:
+      - my-app-network
+    restart: "no"
+    profiles:
+      - ai
+      - full
+
+networks:
+  my-app-network:
+    driver: bridge
+volumes:
+  redis_data: # redis 볼륨 정의
+  mysql_data: # mysql 볼륨 정의

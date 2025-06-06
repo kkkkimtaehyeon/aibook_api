@@ -50,37 +50,6 @@ public class MemberController {
         return ApiResponse.success(HttpStatus.OK, memberDetail);
     }
 
-    // 목소리 등록
-    @PostMapping("/api/voices")
-    public ApiResponse<Void> uploadVoice(@AuthenticationPrincipal CustomUserDetails userDetail,
-                                         @Valid @ModelAttribute VoiceUploadRequestDto voiceUploadRequest) {
-        Long memberId = getMemberIdFromUserDetail(userDetail);
-        memberService.uploadVoice(memberId, voiceUploadRequest);
-        return ApiResponse.success(HttpStatus.OK, null);
-    }
-
-    @GetMapping("/api/voices")
-    public ResponseEntity<ApiResponseBody> getMemberVoices(@AuthenticationPrincipal CustomUserDetails userDetail) {
-        Long memberId = getMemberIdFromUserDetail(userDetail);
-        List<VoiceDto> voices = memberService.getVoices(memberId);
-        return ResponseEntity.ok(new ApiResponseBody(voices));
-    }
-
-    /**
-     * 목소리 삭제
-     *
-     * @param userDetail
-     * @param voiceId
-     * @return
-     */
-    @DeleteMapping("/api/voices/{voice-id}")
-    public ApiResponse<List<VoiceDto>> deleteMemberVoices(@AuthenticationPrincipal CustomUserDetails userDetail,
-                                                          @PathVariable("voice-id") Long voiceId) {
-        memberService.removeVoices(voiceId);
-        return ApiResponse.success(HttpStatus.NO_CONTENT);
-    }
-
-
     private Long getMemberIdFromUserDetail(CustomUserDetails userDetail) {
         if (userDetail == null) {
             throw new MemberNotFoundException("회원 정보를 가져오는 중 오류가 발생했습니다.");

@@ -68,7 +68,7 @@ public class StoryServiceImpl implements StoryService {
     public void removeStory(Long storyId) {
         boolean isExists = storyRepository.existsById(storyId);
         if (!isExists) {
-            throw new StoryNotFoundException("존재하지 않는 동화입니다.");
+            throw new StoryNotFoundException(storyId);
         }
         storyRepository.deleteById(storyId);
     }
@@ -85,6 +85,6 @@ public class StoryServiceImpl implements StoryService {
 
 
     private Story findStory(Long storyId) {
-        return storyRepository.findById(storyId).orElseThrow(() -> new StoryNotFoundException("존재하지 않는 동화입니다. storyId: " + storyId));
+        return storyRepository.findById(storyId).orElseThrow(() -> new StoryNotFoundException(storyId));
     }
 }

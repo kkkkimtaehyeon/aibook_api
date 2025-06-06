@@ -18,5 +18,10 @@ public interface VoiceRepository extends JpaRepository<Voice, Long> {
             "WHERE m.id = :memberId AND v.deletedAt IS NULL ")
     List<VoiceDto> findByMemberId(@Param("memberId") Long memberId);
 
+    @Query("SELECT new com.kth.aibook.dto.member.VoiceDto(v.id, v.name) " +
+            "FROM Voice v " +
+            "WHERE v.isDefault = true")
+    List<VoiceDto> findDefaultVoices();
+
 
 }

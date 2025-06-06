@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.exception.JwtExpiredException;
 import com.kth.aibook.common.provider.JwtProvider;
+import com.kth.aibook.dto.common.ApiResponseBody;
 import com.kth.aibook.service.authentication.TokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -49,12 +51,12 @@ public class JwtFilter extends OncePerRequestFilter {
         return token.substring(7);
     }
 
-    private void sendErrorResponse(HttpServletResponse response, Exception exception) throws IOException {
+    private void sendErrorResponse(HttpServletResponse response, Exception e) throws IOException {
+        response.setStatus(401);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
-        ApiResponse<?> apiResponse = ApiResponse.error(HttpStatus.UNAUTHORIZED, exception.getMessage());
-        String jsonResponse = new ObjectMapper().writeValueAsString(apiResponse);
+        ApiResponseBody apiResponseBody = new ApiResponseBody(e.getMessage(), null);
+        String jsonResponse = new ObjectMapper().writeValueAsString(apiResponseBody);
         response.getWriter().write(jsonResponse);
     }
 }

@@ -27,17 +27,21 @@ public class Voice {
     @Column(nullable = true)
     private LocalDateTime deletedAt;
 
+    @Column(nullable = false)
+    private boolean isDefault;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = true)
     private Member member;
 
     @Builder
-    public Voice(Long id, String name, String audioUrl, Member member, LocalDateTime deletedAt) {
+    public Voice(Long id, String name, String audioUrl, Member member, LocalDateTime deletedAt, boolean isDefault) {
         this.id = id;
         this.name = name;
         this.audioUrl = audioUrl;
         this.deletedAt = deletedAt;
         this.member = member;
+        this.isDefault = isDefault;
     }
 
     public void logicallyDeleteVoice() {

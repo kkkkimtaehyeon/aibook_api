@@ -28,7 +28,7 @@ public class StoryLikeServiceImpl implements StoryLikeService {
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
         Story story = storyRepository
                 .findById(storyId)
-                .orElseThrow(() -> new StoryNotFoundException("존재하지 않는 동화입니다."));
+                .orElseThrow(() -> new StoryNotFoundException(storyId));
 
         // 이미 좋아요 눌렀으면 취소
         if (isAlreadyLiked(memberId, storyId)) {

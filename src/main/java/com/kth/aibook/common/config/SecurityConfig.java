@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/tags").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/stories/*/members/*/voices/*/dubbing/completed").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/token/reissue").permitAll()
+                .requestMatchers("/api/dubbed-stories/**").permitAll()
+
                 .anyRequest().authenticated()
         );
         return http.build();

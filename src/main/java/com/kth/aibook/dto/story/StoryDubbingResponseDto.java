@@ -1,5 +1,7 @@
 package com.kth.aibook.dto.story;
 
+import com.kth.aibook.entity.story.Story;
+import com.kth.aibook.entity.story.StoryDubbing;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
@@ -18,5 +20,15 @@ public class StoryDubbingResponseDto {
         this.writer = writer;
         this.voiceName = voiceName;
         this.coverImageUrl = coverImageUrl;
+    }
+
+    public StoryDubbingResponseDto(StoryDubbing storyDubbing) {
+        Story story = storyDubbing.getStory();
+        this.id = storyDubbing.getId();
+        this.title = story.getTitle();
+        this.writer = story.getMember().getNickName();
+        this.voiceName = storyDubbing.getVoice().getName();
+        this.coverImageUrl = story.getCoverImageUrl();
+
     }
 }

@@ -91,7 +91,8 @@ public class StoryQueryRepository {
 //                        member.id,
 //                        member.nickName,
 //                        story.viewCount,
-//                        storyLike.count()
+//                        storyLike.count(),
+//                        story.coverImageUrl
 //                ))
 //                .from(story)
 //                .innerJoin(story.member, member)
@@ -126,7 +127,7 @@ public class StoryQueryRepository {
 //                    .where(storyTag.story.id.in(storyDto.getStoryId()))
 //                    .fetch();
 //            if (!tagList.isEmpty()) {
-//                storyDto.setTagList(tagList);
+//                storyDto.setTags(tagList);
 //            }
 //        }
 //

@@ -136,11 +136,11 @@ class AuthControllerTest {
         when(tokenService.getRefreshDuration()).thenReturn(refreshDuration);
 
         // When
-        ApiResponse<?> apiResponse = authController.reissueAccessToken(request, response);
+        ResponseEntity<ApiResponseBody> apiResponse = authController.reissueAccessToken(request, response);
 
         // Then
-        assertEquals(HttpStatus.OK, apiResponse.getCode());
-        assertEquals(newAccessToken, apiResponse.getData());
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals(newAccessToken, apiResponse.getBody().data());
 
         // 새로운 리프레시 토큰이 쿠키에 저장되었는지 확인
         Cookie newRefreshTokenCookie = response.getCookie("refresh-token");

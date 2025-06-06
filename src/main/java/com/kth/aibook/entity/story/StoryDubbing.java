@@ -32,7 +32,7 @@ public class StoryDubbing {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToMany(mappedBy = "storyDubbing", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "storyDubbing", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<StoryPageDubbing> storyPageDubbings = new ArrayList<>();
 
     private LocalDateTime dubbedAt;

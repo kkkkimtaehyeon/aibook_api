@@ -89,8 +89,8 @@ public class StoryQueryController {
     }
 
     @GetMapping("/dubbed-stories/{dubbed-story-id}")
-    public ApiResponse<StoryDubbingDetailResponseDto> getDubbedStory(@PathVariable("dubbed-story-id") Long storyDubbingId) {
+    public ResponseEntity<ApiResponseBody> getDubbedStory(@PathVariable("dubbed-story-id") Long storyDubbingId) {
         StoryDubbingDetailResponseDto response = storyQueryService.getStoryDubbing(storyDubbingId);
-        return ApiResponse.success(HttpStatus.OK, response);
+        return ResponseEntity.ok(new ApiResponseBody(response));
     }
 }

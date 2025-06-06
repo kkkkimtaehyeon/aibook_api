@@ -58,7 +58,7 @@ public class StoryQueryServiceImpl implements StoryQueryService {
     @Override
     public StoryDetailResponseDto getStory(Long storyId, CustomUserDetails userDetails) {
         Story story = storyRepository.findById(storyId).orElseThrow(()
-                -> new StoryNotFoundException("존재하지 않는 동화입니다."));
+                -> new StoryNotFoundException(storyId));
         // 조회수 1 증가
         story.increaseViewCount(1);
 

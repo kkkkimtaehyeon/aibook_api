@@ -62,8 +62,9 @@ CREATE TABLE voice
     voice_id   BIGINT       NOT NULL AUTO_INCREMENT,
     name       VARCHAR(20)  NOT NULL,
     audio_url  VARCHAR(500) NOT NULL,
-    member_id  BIGINT       NOT NULL,
-    deleted_at TIMESTAMP,
+    deleted_at TIMESTAMP    NULL,
+    is_default TINYINT(1)   NOT NULL,
+    member_id  BIGINT       NULL,
     PRIMARY KEY (voice_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE
 );

@@ -2,9 +2,10 @@ package com.kth.aibook.common.handler;
 
 import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.exception.JwtExpiredException;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.kth.aibook.dto.common.ApiResponseBody;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -17,8 +18,8 @@ public class GlobalRestExceptionHandler {
     }
 
     @ExceptionHandler(JwtException.class)
-    public ApiResponse<?> handlerJwtException(JwtException e) {
-        return ApiResponse.error(HttpStatus.FORBIDDEN, e.getMessage());
+    public ResponseEntity<ApiResponseBody> handlerJwtException(JwtException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponseBody(e.getMessage(), null));
     }
 
 

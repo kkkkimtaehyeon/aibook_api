@@ -22,8 +22,6 @@ import java.util.List;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final OauthMemberRepository oauthMemberRepository;
-    private final VoiceRepository voiceRepository;
-    private final CloudStorageService cloudStorageService;
 
 
     @Transactional
@@ -75,42 +73,6 @@ public class MemberServiceImpl implements MemberService {
     public MemberDetailDto getMemberDetailInfoById(Long memberId) {
         Member member = findMember(memberId);
         return new MemberDetailDto(member);
-    }
-
-    @Override
-    public Long uploadVoice(Long memberId, VoiceUploadRequestDto voiceUploadRequest) {
-        Member member = findMember(memberId);
-        String audioUrl = cloudStorageService.uploadFile(voiceUploadRequest.getAudioFile());
-        Voice voice = Voice.builder()
-                .name(voiceUploadRequest.getName())
-                .audioUrl(audioUrl)
-                .member(member)
-                .build();
-        Voice savedVoice = voiceRepository.save(voice);
-        return savedVoice.getId();
-    }
-
-    @Override
-    public List<VoiceDto> getVoices(Long memberId) {
-        return voiceRepository.findByMemberId(memberId);
-    }
-
-//    변경 전
-//    @Override
-//    public void removeVoices(Long voiceId) {
-//        boolean isVoiceExists = voiceRepository.existsById(voiceId);
-//        if (!isVoiceExists) {
-//            throw new VoiceNotFoundException("voice(id: " + voiceId + ") is not found!");
-//        }
-//            voiceRepository.deleteById(voiceId);
-//    }
-
-    @Transactional
-    @Override
-    public void removeVoices(Long voiceId) {
-        Voice voice =  voiceRepository.findById(voiceId).orElseThrow(() -> new VoiceNotFoundException("voice(id: " + voiceId + ") is not found!"));
-        // s3 오디오는 삭제?
-        voice.logicallyDeleteVoice();
     }
 
     private OauthMember saveOauthMember(String oauthProvider, long oauthProviderMemberId) {

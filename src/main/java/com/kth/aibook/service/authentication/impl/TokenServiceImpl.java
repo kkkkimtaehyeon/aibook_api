@@ -51,7 +51,6 @@ public class TokenServiceImpl implements TokenService {
     public String issueRefreshToken(TokenRequestDto tokenRequestDto) {
         return jwtProvider.generateRefreshToken(tokenRequestDto);
     }
-
     // 한 트랜잭션으로 묶어줘야됨
     @Transactional
     @Override

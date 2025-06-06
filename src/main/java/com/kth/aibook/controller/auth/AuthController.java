@@ -63,12 +63,12 @@ public class AuthController {
      * @return
      */
     @PostMapping("/api/token/reissue")
-    public ApiResponse<?> reissueAccessToken(HttpServletRequest req, HttpServletResponse res) {
+    public ResponseEntity<ApiResponseBody> reissueAccessToken(HttpServletRequest req, HttpServletResponse res) {
         String refreshToken = getRefreshTokenFromCookie(req);
         Tokens tokens = tokenService.reissueAccessToken(refreshToken);
         // 쿠키에 refresh token 저장
         addRefreshTokenCookie(tokens.refreshToken(), res);
-        return ApiResponse.success(HttpStatus.OK, tokens.accessToken());
+        return ResponseEntity.ok(new ApiResponseBody(tokens.accessToken()));
     }
 
     /**

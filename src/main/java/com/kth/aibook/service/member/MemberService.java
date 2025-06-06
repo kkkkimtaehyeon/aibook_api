@@ -15,10 +15,4 @@ public interface MemberService {
 
     MemberDetailDto getMemberDetailInfoById(Long memberId);
 
-    Long uploadVoice(Long memberId, VoiceUploadRequestDto voiceUploadRequest);
-
-    List<VoiceDto> getVoices(Long memberId);
-
-    void removeVoices(Long voiceId);
-
 }
