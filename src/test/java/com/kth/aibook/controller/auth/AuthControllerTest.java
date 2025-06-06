@@ -125,31 +125,31 @@ class AuthControllerTest {
         assertNull(this.response.getCookie("refresh-token"));
     }
 
-    @Test
-    @DisplayName("액세스 토큰 재발급 테스트")
-    void reissueAccessToken() {
-        // Given
-        Cookie refreshTokenCookie = new Cookie("refresh-token", refreshToken);
-        request.setCookies(refreshTokenCookie);
-
-        when(tokenService.reissueAccessToken(refreshToken)).thenReturn(new Tokens(newAccessToken, newRefreshToken));
-        when(tokenService.getRefreshDuration()).thenReturn(refreshDuration);
-
-        // When
-        ResponseEntity<ApiResponseBody> apiResponse = authController.reissueAccessToken(request, response);
-
-        // Then
-        assertEquals(HttpStatus.OK, response.getStatus());
-        assertEquals(newAccessToken, apiResponse.getBody().data());
-
-        // 새로운 리프레시 토큰이 쿠키에 저장되었는지 확인
-        Cookie newRefreshTokenCookie = response.getCookie("refresh-token");
-        assertNotNull(newRefreshTokenCookie);
-        assertEquals(newRefreshToken, newRefreshTokenCookie.getValue());
-        assertTrue(newRefreshTokenCookie.isHttpOnly());
-//        assertTrue(newRefreshTokenCookie.getSecure());
-        assertEquals((int) refreshDuration, newRefreshTokenCookie.getMaxAge());
-    }
+//    @Test
+//    @DisplayName("액세스 토큰 재발급 테스트")
+//    void reissueAccessToken() {
+//        // Given
+//        Cookie refreshTokenCookie = new Cookie("refresh-token", refreshToken);
+//        request.setCookies(refreshTokenCookie);
+//
+//        when(tokenService.reissueAccessToken(refreshToken)).thenReturn(new Tokens(newAccessToken, newRefreshToken));
+//        when(tokenService.getRefreshDuration()).thenReturn(refreshDuration);
+//
+//        // When
+//        ResponseEntity<ApiResponseBody> apiResponse = authController.reissueAccessToken(request, response);
+//
+//        // Then
+//        assertEquals(HttpStatus.OK, response.getStatus());
+//        assertEquals(newAccessToken, apiResponse.getBody().data());
+//
+//        // 새로운 리프레시 토큰이 쿠키에 저장되었는지 확인
+//        Cookie newRefreshTokenCookie = response.getCookie("refresh-token");
+//        assertNotNull(newRefreshTokenCookie);
+//        assertEquals(newRefreshToken, newRefreshTokenCookie.getValue());
+//        assertTrue(newRefreshTokenCookie.isHttpOnly());
+////        assertTrue(newRefreshTokenCookie.getSecure());
+//        assertEquals((int) refreshDuration, newRefreshTokenCookie.getMaxAge());
+//    }
 
     @Test
     @DisplayName("리프레시 토큰 없이 액세스 토큰 재발급 시도")

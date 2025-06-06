@@ -45,10 +45,4 @@ class StoryDubbingRepositoryTest {
         em.persist(storyDubbing);
     }
 
-    @DisplayName("StoryDubbing 삭제")
-    @Test
-    void deleteStoryDubbing() {
-
-    }
-
 }
