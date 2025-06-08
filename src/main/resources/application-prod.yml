@@ -31,7 +31,7 @@ oauth:
     client-secret: ${kakao-client-secret}
     token-uri: "https://kauth.kakao.com/oauth/token"
     user-info-uri: "https://kapi.kakao.com/v2/user/me"
-    redirect-uri: "http://localhost:5173/login/oauth2/code/kakao"
+    redirect-uri: "${kakao-redirect-uri}"
     grant-type: authorization_code
 
 aws:
@@ -40,3 +40,5 @@ aws:
   region: ${aws-region}
   s3:
     bucket-name: ${aws-s3-bucket-name}
+
+front-domain: ${front-domain}
