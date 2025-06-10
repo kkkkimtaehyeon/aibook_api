@@ -40,7 +40,7 @@ public class AuthController {
      * @param res
      * @return
      */
-    @GetMapping("/login/oauth2/code/kakao")
+    @GetMapping("/api/login/oauth2/code/kakao")
     public ResponseEntity<ApiResponseBody> kakaoLogin(@RequestParam("code") String code, HttpServletResponse res) {
         String kakaoToken = kakaoAuthenticationService.getAccessToken(code);
         long oauthProviderMemberId = kakaoAuthenticationService.getUserIdFromToken(kakaoToken);

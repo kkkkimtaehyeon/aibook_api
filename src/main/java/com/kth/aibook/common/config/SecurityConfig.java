@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/notion").permitAll()
                 .requestMatchers("/health").permitAll()
                 .requestMatchers("/login/**", "/oauth2/authorization/**").permitAll()
+                .requestMatchers("/api/login/oauth2/code/kakao").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stories/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/tags").permitAll()
