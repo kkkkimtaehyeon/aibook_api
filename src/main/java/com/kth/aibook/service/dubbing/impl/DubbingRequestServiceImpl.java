@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class DubbingRequestServiceImpl {
-    private static final String FASTAPI_URL_V3 = "http://localhost:8000" + "/v3/api/voice-cloning";
+    private static final String DUBBING_URL = "http://localhost:8000" + "/ai/v3/voice-cloning";
     private final CloudStorageService cloudStorageService;
     private final RestTemplate restTemplate;
 
@@ -31,7 +31,7 @@ public class DubbingRequestServiceImpl {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<VoiceDubbingRequestDtoV2> httpEntity = new HttpEntity<>(voiceDubbingRequestDtoV2, headers);
-        ResponseEntity<?> response = restTemplate.exchange(FASTAPI_URL_V3, HttpMethod.POST, httpEntity, Void.class);
+        ResponseEntity<?> response = restTemplate.exchange(DUBBING_URL, HttpMethod.POST, httpEntity, Void.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new StoryDubbingException("더빙 생성 요청 중 오류가 발생했습니다.");
