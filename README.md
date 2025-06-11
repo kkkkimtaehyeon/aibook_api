@@ -1,8 +1,9 @@
 
 
 # aibook
-### 배포: https://aibook-front.netlify.app/home
-
+### 배포 
+https://aibook-front.netlify.app/home
+### 레포지토리
 [api 서버](https://github.com/kkkkimtaehyeon/aibook_api) - Java/SpringBoot
 
 [ai 서버](https://github.com/kkkkimtaehyeon/aibook_ai) - Python/Fast API
