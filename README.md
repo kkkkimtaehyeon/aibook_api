@@ -25,7 +25,7 @@
 # 기능 소개
 
 # 개발 환경
-## Backend
+### Backend
 
 - API 서버
     - Language: jdk eclipse temurin 21
@@ -37,13 +37,13 @@
     - Language: python 3.12.4
     - Framework: FastApi
     - DB: redis
-## Frontend
+### Frontend
 - Language: javascript, html, css
 - Framework: react (vite)
 - etc: bootstrap
 
-## Infra
-- Cloud: aws ec2 (ubuntu), rds(mysql), elastic cache(redis), aws s3
+### Infra
+- Cloud: AWS EC2 (ubuntu), AWS RDS(MySQL), AWS Elasticache(valkey), AWS S3
 - Container: Docker, Docker Compose
 - CI/CD: Github Action
 
