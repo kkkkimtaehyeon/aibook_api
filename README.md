@@ -11,9 +11,12 @@ https://aibook-front.netlify.app/home
 [front 서버](https://github.com/kkkkimtaehyeon/aibook_front) - JavaScript/React
 # 개발 동기
 
-현대 사회에서 아이들이 스마트폰에 지나치게 의존해서 생기는 소통부족, 문해력 부족과 같은 문제점들을 보며, 이에 대한 해결방안을 고민했습니다. 
+아동의 문해력 저하와 가족 간 소통 부족 문제를 기술로 해결하고자 
+"아이북"을 개발했습니다.
 
-아이들이 부모와 함께 제작에 참여하여 부모와의 유대감을 키우고 자신만의 이야기를 창작할 수 있는 기회를 제공하게 하는 서비스를 개발하게 되었습니다.
+GPT를 활용한 문장 생성과 인터랙티브한 이야기 전개를 통해 아이의 
+문해력과 사고력을 자연스럽게 키우고, 보이스 클로닝으로 부모의 목소리로 동화를 들려주며 정서적 교감을 유도합니다.
+기술 기반의 창의적 학습과 따뜻한 가족 경험을 동시에 실현하는 것을 목표로 했습니다.
 
 ### 기대효과
 
@@ -26,7 +29,16 @@ https://aibook-front.netlify.app/home
 
 2024.07 SW중심대학 경진대회에서 출품한 **그린나래**라는 프로젝트을 설계, 보안, 기능적으로 보완하여 더 업그레이드 시켜보고 싶은 마음에 **아이북**이라는 프로젝트로 다시 개발을 진행합니다.
 
-# 기능 소개
+# 주요 기능 소개
+### 동화 만들기
+<img src="https://github.com/user-attachments/assets/307ee4da-149a-445b-b9b0-f9d6ef8e6c07" width="200" height="450"/>
+<img src="https://github.com/user-attachments/assets/9074b6e5-79d4-4623-97a8-1c683355d86f" width="200" height="450"/>
+<img src="https://github.com/user-attachments/assets/38e0f3dd-2612-43f8-b825-2fd9aba04bb3" width="200" height="450"/>
+
+### 동화 더빙
+<img src="https://github.com/user-attachments/assets/4c4c29c8-1357-4633-83f1-753cccfa99ca" width="200" height="450"/>
+<img src="https://github.com/user-attachments/assets/ed991fdd-16df-4cc0-92ba-7cfc60c9da83" width="200" height="450"/>
+
 
 # 개발 환경
 ### Backend
