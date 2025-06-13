@@ -1,5 +1,6 @@
 package com.kth.aibook.service.authentication.impl;
 
+import com.kth.aibook.common.exception.AuthenticationFailException;
 import com.kth.aibook.common.exception.JwtExpiredException;
 import com.kth.aibook.common.provider.JwtProvider;
 import com.kth.aibook.dto.auth.TokenRequestDto;
@@ -9,6 +10,7 @@ import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +38,12 @@ public class TokenServiceImpl implements TokenService {
         // redis에 refresh token을 저장
         try {
             redisTemplate.opsForValue().set(key, refreshToken, duration, TimeUnit.MILLISECONDS);
+        } catch (RedisConnectionFailureException e) {
+            log.error("redis is not connected: {}", e.getMessage());
+            throw new AuthenticationFailException("login failed: redis is not connected", e);
         } catch (Exception e) {
             log.error("redis exception while save refresh token: {}", e.getMessage());
-            throw new JwtException("redis exception while save refresh token", e);
+            throw new AuthenticationFailException("login failed: fail to save refresh token", e);
         }
     }
 
