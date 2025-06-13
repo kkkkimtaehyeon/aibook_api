@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/token/reissue").permitAll()
                 .requestMatchers("/api/dubbed-stories/**").permitAll()
                 .requestMatchers("/api/health/**").permitAll()
+                .requestMatchers("/error").permitAll()
 
 
 
