@@ -1,5 +1,6 @@
 package com.kth.aibook.service.authentication.impl;
 
+import com.kth.aibook.common.exception.AuthenticationFailException;
 import com.kth.aibook.common.provider.JwtProvider;
 import com.kth.aibook.dto.auth.TokenRequestDto;
 import com.kth.aibook.dto.auth.Tokens;
@@ -139,8 +140,8 @@ class TokenServiceImplTest {
                 eq("refresh:" + memberId), eq(refreshToken), eq(refreshDuration), eq(TimeUnit.MILLISECONDS));
 
         // When & Then
-        JwtException exception = assertThrows(JwtException.class, () -> tokenService.issueTokens(tokenRequestDto));
-        assertTrue(exception.getMessage().contains("redis exception while save refresh token"));
+        AuthenticationFailException exception = assertThrows(AuthenticationFailException.class, () -> tokenService.issueTokens(tokenRequestDto));
+        assertTrue(exception.getMessage().contains("login failed: fail to save refresh token"));
     }
 
     @Test
