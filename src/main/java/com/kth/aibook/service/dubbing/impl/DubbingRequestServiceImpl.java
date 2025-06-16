@@ -43,10 +43,10 @@ public class DubbingRequestServiceImpl {
         Long storyId = story.getId();
         Long voiceId = voice.getId();
         // 더빙 완료시 저장을 위한 웹훅 url
-        String webHookUrl = getWebhookUrl(storyId, voiceId, memberId, requestId);
+        String webHookUrl = getWebhookUrl(storyId, memberId, voiceId, requestId);
 
         Map<Long, DubbingContentAndPreSignedUrlDto> dubbingRequestMap = new HashMap<>();
-        for(StoryPage page: story.getStoryPages()) {
+        for (StoryPage page : story.getStoryPages()) {
             Long pageId = page.getId();
             // s3 업로드 키
             String key = page + "_" + voiceId + "_" + UUID.randomUUID() + ".wav";
@@ -58,7 +58,7 @@ public class DubbingRequestServiceImpl {
         return dubbingRequestMap;
     }
 
-    private String getWebhookUrl(Long storyId, Long voiceId, Long memberId, String requestId) {
-        return String.format("http://localhost:8080/api/stories/%d/members/%d/voices/%d/dubbing/completed?request-id=%s", storyId, memberId, voiceId ,requestId);
+    private String getWebhookUrl(Long storyId, Long memberId, Long voiceId, String requestId) {
+        return String.format("http://localhost:8080/api/stories/%d/members/%d/voices/%d/dubbing/completed?request-id=%s", storyId, memberId, voiceId, requestId);
     }
 }

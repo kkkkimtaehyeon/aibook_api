@@ -58,6 +58,7 @@ public class StoryDubbingService2Impl implements StoryDubbingService2 {
     }
 
     // 더빙 저장
+    @Transactional
     @Override
     public Long saveDubbedStory(Long storyId, Long memberId, Long voiceId, String requestId) {
         Story story = storyRepository.findById(storyId)
@@ -78,7 +79,7 @@ public class StoryDubbingService2Impl implements StoryDubbingService2 {
         // 더빙 페이지 추가
         for(StoryPage page: story.getStoryPages()) {
             DubbingContentAndPreSignedUrlDto contentAndUrl = dubbingMap.get(page.getId());
-            String audioUrl = contentAndUrl.preSignedUrl();
+            String audioUrl = contentAndUrl.preSignedUrl().split("\\?")[0];
             storyDubbing.addStoryDubbingPage(new StoryPageDubbing(page, audioUrl));
         }
         StoryDubbing savedStoryDubbing = storyDubbingRepository.save(storyDubbing);
@@ -93,6 +94,7 @@ public class StoryDubbingService2Impl implements StoryDubbingService2 {
     }
 
     // 상세조회
+    @Transactional(readOnly = true)
     @Override
     public StoryDubbingResponseDto getDubbedStory(Long dubbedStoryId) {
         StoryDubbing storyDubbing = storyDubbingRepository.findById(dubbedStoryId)

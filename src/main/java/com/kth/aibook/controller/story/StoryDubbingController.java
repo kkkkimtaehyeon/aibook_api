@@ -1,15 +1,10 @@
 package com.kth.aibook.controller.story;
 
-import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
-import com.kth.aibook.common.exception.StoryDubbingException;
 import com.kth.aibook.dto.common.ApiResponseBody;
 import com.kth.aibook.dto.dubbedStory.DubbedStoryCreateRequestDto;
-import com.kth.aibook.dto.dubbedStory.DubbedStorySaveRequestDto;
-import com.kth.aibook.dto.story.DubbingContentAndPreSignedUrlDto;
 import com.kth.aibook.dto.story.StoryDubbingResponseDto;
 import com.kth.aibook.service.dubbing.StoryDubbingService2;
-import com.kth.aibook.service.story.StoryDubbingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
@@ -18,9 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,14 +22,13 @@ public class StoryDubbingController {
     private final StoryDubbingService2 storyDubbingService2;
 
 
-
     // 동화 더빙 생성
     @PostMapping("/api/dubbed-stories")
     public ResponseEntity<Void> createdDubbedStory(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                    @RequestBody @Valid DubbedStoryCreateRequestDto request) {
         Long memberId = userDetails.getMemberId();
         storyDubbingService2.requestDubbedStory(memberId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 동화 더빙 완료 webhook
@@ -45,7 +37,7 @@ public class StoryDubbingController {
                                                   @PathVariable("member-id") Long memberId,
                                                   @PathVariable("voice-id") Long voiceId,
                                                   @RequestParam("request-id") String requestId) {
-        storyDubbingService2.saveDubbedStory(storyId, voiceId, memberId, requestId);
+        storyDubbingService2.saveDubbedStory(storyId, memberId, voiceId, requestId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
