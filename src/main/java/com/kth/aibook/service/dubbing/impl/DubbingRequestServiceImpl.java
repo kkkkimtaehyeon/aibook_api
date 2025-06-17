@@ -8,10 +8,13 @@ import com.kth.aibook.entity.story.Story;
 import com.kth.aibook.entity.story.StoryPage;
 import com.kth.aibook.service.cloud.CloudStorageService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -21,9 +24,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class DubbingRequestServiceImpl {
+    private static final Logger log = LoggerFactory.getLogger(DubbingRequestServiceImpl.class);
     @Value("${ai-server-domain}")
     private String AI_SERVER_DOMAIN;
-    private  final String DUBBING_URL = AI_SERVER_DOMAIN + "/ai/v3/voice-cloning";
     private final CloudStorageService cloudStorageService;
     private final RestTemplate restTemplate;
 
@@ -34,10 +37,14 @@ public class DubbingRequestServiceImpl {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<VoiceDubbingRequestDtoV2> httpEntity = new HttpEntity<>(voiceDubbingRequestDtoV2, headers);
-        ResponseEntity<?> response = restTemplate.exchange(DUBBING_URL, HttpMethod.POST, httpEntity, Void.class);
+        try {
+            ResponseEntity<?> response = restTemplate.exchange(AI_SERVER_DOMAIN + "/ai/v3/voice-cloning", HttpMethod.POST, httpEntity, Void.class);
 
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new StoryDubbingException("더빙 생성 요청 중 오류가 발생했습니다.");
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new StoryDubbingException("더빙 생성 요청 중 오류가 발생했습니다.");
+            }
+        } catch (RestClientException e) {
+            log.error("{}/ai/v3/voice-cloning 요청이 실패했습니다.", AI_SERVER_DOMAIN, e);
         }
     }
 
