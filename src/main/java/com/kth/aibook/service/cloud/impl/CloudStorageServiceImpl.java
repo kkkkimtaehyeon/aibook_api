@@ -38,11 +38,23 @@ public class CloudStorageServiceImpl implements CloudStorageService {
     }
 
     @Override
-    public String uploadFile(MultipartFile multipartFile) {
+    public String uploadMultiPartFile(MultipartFile multipartFile) {
         String fileName = getUniqueFileName(multipartFile);
-        putMultiPartFile(multipartFile, fileName);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(multipartFile.getContentType());
+        try {
+            s3.putObject(BUCKET, fileName, multipartFile.getInputStream(), metadata);
+        } catch (AmazonServiceException e) {
+            log.error("AWS S3 서비스 예외 발생: {}", e.getMessage(), e);
+            throw new FileUploadException("S3 업로드 중 오류가 발생했습니다.");
+        } catch (SdkClientException e) {
+            throw new FileUploadException("S3와의 통신 중 오류가 발생했습니다.");
+        } catch (IOException e) {
+            throw new FileUploadException("파일을 읽는 중 오류가 발생했습니다.");
+        }
         return fetchUrl(fileName);
     }
+
 
     @Override
     public String uploadBytes(byte[] bytes, String format) {
@@ -52,11 +64,6 @@ public class CloudStorageServiceImpl implements CloudStorageService {
         metadata.setContentType(format);
         s3.putObject(BUCKET, fileName, byteArrayInputStream, metadata);
         return fetchUrl(fileName);
-    }
-
-    @Override
-    public String getFile(String fileName) {
-        return "";
     }
 
     @Override
@@ -74,27 +81,11 @@ public class CloudStorageServiceImpl implements CloudStorageService {
         return ogFileName + UUID.randomUUID() + "." + fileExtension;
     }
 
-    private void putMultiPartFile(MultipartFile multipartFile, String fileName) {
-        try {
-            File file = convert(multipartFile, fileName);
-            s3.putObject(BUCKET, fileName, file);
-        } catch (AmazonServiceException e) {
-            log.error("AWS S3 서비스 예외 발생: {}", e.getMessage(), e);
-            throw new FileUploadException("S3 업로드 중 오류가 발생했습니다.");
-        } catch (SdkClientException e) {
-            log.error("AWS SDK 클라이언트 예외 발생: {}", e.getMessage(), e);
-            throw new FileUploadException("S3와의 통신 중 오류가 발생했습니다.");
-        } catch (IOException e) {
-            log.error("파일 IO 예외 발생: {}", e.getMessage(), e);
-            throw new FileUploadException("파일을 읽는 중 오류가 발생했습니다.");
-        }
-    }
-
     private String fetchUrl(String fileName) {
         return s3.getUrl(BUCKET, fileName).toString();
     }
 
-    private File convert(MultipartFile multipartFile, String fileName) throws IOException {
+    private File convertToFile(MultipartFile multipartFile, String fileName) throws IOException {
         File file = new File(fileName);
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
