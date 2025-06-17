@@ -1,14 +1,12 @@
 package com.kth.aibook.service.cloud.impl;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.ClientConfiguration;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
-import com.amazonaws.retry.PredefinedRetryPolicies;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.kth.aibook.common.exception.FileUploadException;
 import com.kth.aibook.service.cloud.CloudStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +33,6 @@ public class CloudStorageServiceImpl implements CloudStorageService {
     public String getPreSignedUrlForUpdate(String key) {
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(BUCKET, key)
                 .withMethod(HttpMethod.PUT)
-//                .withContentType("audio/wav")
                 .withExpiration(getPreSignedExpiration());
         return s3.generatePresignedUrl(generatePresignedUrlRequest).toString();
     }
@@ -63,8 +60,12 @@ public class CloudStorageServiceImpl implements CloudStorageService {
     }
 
     @Override
-    public void removeFile(String fileName) {
-
+    public void removeFile(String key) {
+        try {
+            s3.deleteObject(BUCKET, key);
+        } catch (RuntimeException e) {
+            log.error("s3 파일 삭제 실패: key: {}, ", key, e);
+        }
     }
 
     private String getUniqueFileName(MultipartFile file) {
@@ -79,13 +80,13 @@ public class CloudStorageServiceImpl implements CloudStorageService {
             s3.putObject(BUCKET, fileName, file);
         } catch (AmazonServiceException e) {
             log.error("AWS S3 서비스 예외 발생: {}", e.getMessage(), e);
-            throw new RuntimeException("S3 업로드 중 오류가 발생했습니다.");
+            throw new FileUploadException("S3 업로드 중 오류가 발생했습니다.");
         } catch (SdkClientException e) {
             log.error("AWS SDK 클라이언트 예외 발생: {}", e.getMessage(), e);
-            throw new RuntimeException("S3와의 통신 중 오류가 발생했습니다.");
+            throw new FileUploadException("S3와의 통신 중 오류가 발생했습니다.");
         } catch (IOException e) {
             log.error("파일 IO 예외 발생: {}", e.getMessage(), e);
-            throw new RuntimeException("파일을 읽는 중 오류가 발생했습니다.");
+            throw new FileUploadException("파일을 읽는 중 오류가 발생했습니다.");
         }
     }
 
