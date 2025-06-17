@@ -8,6 +8,7 @@ import com.kth.aibook.entity.story.Story;
 import com.kth.aibook.entity.story.StoryPage;
 import com.kth.aibook.service.cloud.CloudStorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +21,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class DubbingRequestServiceImpl {
-    private static final String DUBBING_URL = "http://localhost:8000" + "/ai/v3/voice-cloning";
+    @Value("${ai-server-domain}")
+    private String AI_SERVER_DOMAIN;
+    private  final String DUBBING_URL = AI_SERVER_DOMAIN + "/ai/v3/voice-cloning";
     private final CloudStorageService cloudStorageService;
     private final RestTemplate restTemplate;
 
