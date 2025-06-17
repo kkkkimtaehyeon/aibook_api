@@ -45,7 +45,6 @@ public class CloudStorageServiceImpl implements CloudStorageService {
         try {
             s3.putObject(BUCKET, fileName, multipartFile.getInputStream(), metadata);
         } catch (AmazonServiceException e) {
-            log.error("AWS S3 서비스 예외 발생: {}", e.getMessage(), e);
             throw new FileUploadException("S3 업로드 중 오류가 발생했습니다.");
         } catch (SdkClientException e) {
             throw new FileUploadException("S3와의 통신 중 오류가 발생했습니다.");
