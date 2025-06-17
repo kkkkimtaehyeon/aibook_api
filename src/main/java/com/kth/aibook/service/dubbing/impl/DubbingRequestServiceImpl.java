@@ -27,6 +27,8 @@ public class DubbingRequestServiceImpl {
     private static final Logger log = LoggerFactory.getLogger(DubbingRequestServiceImpl.class);
     @Value("${ai-server-domain}")
     private String AI_SERVER_DOMAIN;
+    @Value("${api-server-domain}")
+    private String API_SERVER_DOMAIN;
     private final CloudStorageService cloudStorageService;
     private final RestTemplate restTemplate;
 
@@ -69,6 +71,6 @@ public class DubbingRequestServiceImpl {
     }
 
     private String getWebhookUrl(Long storyId, Long memberId, Long voiceId, String requestId) {
-        return String.format("http://localhost:8080/api/stories/%d/members/%d/voices/%d/dubbing/completed?request-id=%s", storyId, memberId, voiceId, requestId);
+        return String.format(API_SERVER_DOMAIN + "/api/stories/%d/members/%d/voices/%d/dubbing/completed?request-id=%s", storyId, memberId, voiceId, requestId);
     }
 }

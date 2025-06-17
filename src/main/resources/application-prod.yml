@@ -39,6 +39,7 @@ aws:
 
 front-domain: ${front-domain}
 ai-server-domain: ${ai-server-domain}
+api-server-domain: ${ai-server-domain}
 
 # 프로덕션 로깅 레벨: info
 logging:
