@@ -1,6 +1,5 @@
 package com.kth.aibook.common.handler;
 
-import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.exception.JwtExpiredException;
 import com.kth.aibook.dto.common.ApiResponseBody;
 import io.jsonwebtoken.JwtException;
@@ -17,12 +16,12 @@ import java.util.List;
 public class GlobalRestExceptionHandler {
 
     @ExceptionHandler(JwtExpiredException.class)
-    public ApiResponse<?> handlerJwtExpiredException(JwtException e) {
-        return ApiResponse.error(HttpStatus.UNAUTHORIZED, e.getMessage());
+    public ResponseEntity<ApiResponseBody> handleJwtExpiredException(JwtException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponseBody(e.getMessage(), null));
     }
 
     @ExceptionHandler(JwtException.class)
-    public ResponseEntity<ApiResponseBody> handlerJwtException(JwtException e) {
+    public ResponseEntity<ApiResponseBody> handleJwtException(JwtException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponseBody(e.getMessage(), null));
     }
 

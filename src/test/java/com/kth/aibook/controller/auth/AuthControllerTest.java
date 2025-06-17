@@ -1,6 +1,5 @@
 package com.kth.aibook.controller.auth;
 
-import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.dto.auth.TokenRequestDto;
 import com.kth.aibook.dto.auth.Tokens;
 import com.kth.aibook.dto.common.ApiResponseBody;
@@ -31,8 +30,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {

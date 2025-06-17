@@ -1,11 +1,17 @@
 package com.kth.aibook.service.cloud.impl;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.HttpMethod;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.retry.PredefinedRetryPolicies;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.kth.aibook.service.cloud.CloudStorageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +23,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CloudStorageServiceImpl implements CloudStorageService {
@@ -70,9 +77,15 @@ public class CloudStorageServiceImpl implements CloudStorageService {
         try {
             File file = convert(multipartFile, fileName);
             s3.putObject(BUCKET, fileName, file);
+        } catch (AmazonServiceException e) {
+            log.error("AWS S3 서비스 예외 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("S3 업로드 중 오류가 발생했습니다.");
+        } catch (SdkClientException e) {
+            log.error("AWS SDK 클라이언트 예외 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("S3와의 통신 중 오류가 발생했습니다.");
         } catch (IOException e) {
-            //TODO: 예외처리 추가 필요
-            throw new RuntimeException("파일 변환 중 오류가 발생했습니다!");
+            log.error("파일 IO 예외 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("파일을 읽는 중 오류가 발생했습니다.");
         }
     }
 

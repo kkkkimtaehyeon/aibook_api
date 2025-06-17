@@ -1,13 +1,10 @@
 package com.kth.aibook.controller.story;
 
-import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.common.ApiResponseBody;
 import com.kth.aibook.dto.story.*;
 import com.kth.aibook.service.story.StoryQueryService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -29,15 +26,15 @@ public class StoryQueryController {
     private final StoryQueryService storyQueryService;
 
     @GetMapping("/most-viewed")
-    public ApiResponse<List<StorySimpleResponseDto>> getMostViewedStories() {
+    public ResponseEntity<ApiResponseBody> getMostViewedStories() {
         List<StorySimpleResponseDto> mostViewedStories = storyQueryService.getMostViewedStories();
-        return ApiResponse.success(HttpStatus.OK, mostViewedStories);
+        return ResponseEntity.ok().body(new ApiResponseBody(mostViewedStories));
     }
 
     @GetMapping("/most-liked")
-    public ApiResponse<List<StorySimpleResponseDto>> getMostLikedStories() {
+    public ResponseEntity<ApiResponseBody> getMostLikedStories() {
         List<StorySimpleResponseDto> mostLikedStories = storyQueryService.getMostLikedStories();
-        return ApiResponse.success(HttpStatus.OK, mostLikedStories);
+        return ResponseEntity.ok().body(new ApiResponseBody(mostLikedStories));
     }
 
     // 동화 목록 조회
@@ -73,10 +70,10 @@ public class StoryQueryController {
 
     // 최신
     @GetMapping("/my/latest")
-    public ApiResponse<StoryDetailResponseDto> getMyLatestStory(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponseBody> getMyLatestStory(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
         StoryDetailResponseDto latestStoryDetail = storyQueryService.getLatestStory(memberId);
-        return ApiResponse.success(HttpStatus.OK, latestStoryDetail);
+        return ResponseEntity.ok(new ApiResponseBody(latestStoryDetail));
     }
 
     // 내가 더빙한 동화 목록 조회

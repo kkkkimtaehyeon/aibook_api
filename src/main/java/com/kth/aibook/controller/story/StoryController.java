@@ -1,11 +1,9 @@
 package com.kth.aibook.controller.story;
 
-import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
-import com.kth.aibook.common.exception.StoryDubbingException;
 import com.kth.aibook.dto.common.ApiResponseBody;
-import com.kth.aibook.dto.story.*;
-import com.kth.aibook.service.story.StoryDubbingService;
+import com.kth.aibook.dto.story.StoryCreateRequestDto;
+import com.kth.aibook.dto.story.StoryPatchRequestDto;
 import com.kth.aibook.service.story.StoryLikeService;
 import com.kth.aibook.service.story.StoryService;
 import jakarta.validation.Valid;
@@ -14,9 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/stories")
@@ -36,11 +31,11 @@ public class StoryController {
 
     // 동화 좋아요
     @PostMapping("/{story-id}/like")
-    public ApiResponse<Void> likeStory(@PathVariable("story-id") Long storyId,
+    public ResponseEntity<Void> likeStory(@PathVariable("story-id") Long storyId,
                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
         storyLikeService.likeStory(memberId, storyId);
-        return ApiResponse.success(HttpStatus.OK, null);
+        return ResponseEntity.ok().build();
     }
 
     // 동화 삭제
@@ -52,9 +47,9 @@ public class StoryController {
 
     // 동화 수정
     @PatchMapping("/{story-id}")
-    public ApiResponse<?> patchStory(@PathVariable("story-id") Long storyId,
+    public ResponseEntity<Void> patchStory(@PathVariable("story-id") Long storyId,
                                      @RequestBody StoryPatchRequestDto patchRequest) {
         storyService.patchStory(storyId, patchRequest);
-        return ApiResponse.success(HttpStatus.OK, null);
+        return ResponseEntity.ok().build();
     }
 }

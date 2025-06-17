@@ -1,6 +1,5 @@
 package com.kth.aibook.controller.auth;
 
-import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.auth.TokenRequestDto;
 import com.kth.aibook.dto.auth.Tokens;
@@ -17,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -80,11 +78,11 @@ public class AuthController {
      * @return
      */
     @GetMapping("/api/logout")
-    public ApiResponse<?> logout(@AuthenticationPrincipal CustomUserDetails userDetail, HttpServletRequest req, HttpServletResponse res) {
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal CustomUserDetails userDetail, HttpServletRequest req, HttpServletResponse res) {
         tokenService.removeRefreshToken(userDetail.getMemberId());
         removeRefreshTokenFromCookie(req, res);
         SecurityContextHolder.clearContext();
-        return ApiResponse.success(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     // 쿠키에 refresh token 저장

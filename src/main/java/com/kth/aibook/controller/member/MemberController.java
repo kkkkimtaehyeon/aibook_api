@@ -1,9 +1,10 @@
 package com.kth.aibook.controller.member;
 
-import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.common.ApiResponseBody;
-import com.kth.aibook.dto.member.*;
+import com.kth.aibook.dto.member.MemberCreateRequestDto;
+import com.kth.aibook.dto.member.MemberDetailDto;
+import com.kth.aibook.dto.member.MemberSimpleDto;
 import com.kth.aibook.exception.member.MemberNotFoundException;
 import com.kth.aibook.service.member.MemberService;
 import jakarta.validation.Valid;
@@ -13,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @RestController
 public class MemberController {
@@ -22,9 +21,9 @@ public class MemberController {
 
     // 회원가입
     @PostMapping("/api/members")
-    public ApiResponse<Void> createMember(@Valid @RequestBody MemberCreateRequestDto createRequest) {
+    public ResponseEntity<Void> createMember(@Valid @RequestBody MemberCreateRequestDto createRequest) {
         memberService.createMember(createRequest);
-        return ApiResponse.success(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
@@ -37,17 +36,17 @@ public class MemberController {
 
     // 회원정보
     @GetMapping("/api/me/detail")
-    public ApiResponse<MemberDetailDto> getMyDetailInfo(@AuthenticationPrincipal CustomUserDetails userDetail) {
+    public ResponseEntity<ApiResponseBody> getMyDetailInfo(@AuthenticationPrincipal CustomUserDetails userDetail) {
         Long memberId = getMemberIdFromUserDetail(userDetail);
         MemberDetailDto memberDetail = memberService.getMemberDetailInfoById(memberId);
-        return ApiResponse.success(HttpStatus.OK, memberDetail);
+        return ResponseEntity.ok(new ApiResponseBody(memberDetail));
     }
 
     // 회원 상세정보 조회
     @GetMapping("/api/members/{member-id}")
-    public ApiResponse<MemberDetailDto> getMember(@PathVariable("member-id") Long memberId) {
+    public ResponseEntity<ApiResponseBody> getMember(@PathVariable("member-id") Long memberId) {
         MemberDetailDto memberDetail = memberService.getMemberDetailInfoById(memberId);
-        return ApiResponse.success(HttpStatus.OK, memberDetail);
+        return ResponseEntity.ok(new ApiResponseBody(memberDetail));
     }
 
     private Long getMemberIdFromUserDetail(CustomUserDetails userDetail) {

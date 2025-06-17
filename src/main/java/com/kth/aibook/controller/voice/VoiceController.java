@@ -1,13 +1,11 @@
 package com.kth.aibook.controller.voice;
 
-import com.kth.aibook.common.ApiResponse;
 import com.kth.aibook.common.CustomUserDetails;
 import com.kth.aibook.dto.common.ApiResponseBody;
 import com.kth.aibook.dto.member.VoiceDto;
 import com.kth.aibook.dto.member.VoiceUploadRequestDto;
 import com.kth.aibook.dto.voice.VoiceResponseDto;
 import com.kth.aibook.exception.member.MemberNotFoundException;
-import com.kth.aibook.service.member.MemberService;
 import com.kth.aibook.service.voice.VoiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +41,11 @@ public class VoiceController {
 
     // 목소리 삭제
     @DeleteMapping("/api/voices/{voice-id}")
-    public ApiResponse<List<VoiceDto>> deleteMemberVoices(@AuthenticationPrincipal CustomUserDetails userDetail,
+    public ResponseEntity<Void> deleteMemberVoices(@AuthenticationPrincipal CustomUserDetails userDetail,
                                                           @PathVariable("voice-id") Long voiceId) {
         Long memberId = getMemberIdFromUserDetail(userDetail);
         voiceService.deleteVoice(memberId, voiceId);
-        return ApiResponse.success(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     private Long getMemberIdFromUserDetail(CustomUserDetails userDetail) {
